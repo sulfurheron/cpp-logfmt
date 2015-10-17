@@ -13,7 +13,7 @@ public:
     while(it != map.end()) {
       buffer << it->first << EQUALS << it->second;
       ++it;
-      if (it != map.end()) buffer << SEPERATOR;
+      if (it != map.end()) buffer << SEPARATOR;
     }
     return buffer.str();
   };
@@ -45,7 +45,7 @@ public:
     }
   };
 private:
-  static const char SEPERATOR = ' ';
+  static const char SEPARATOR = ' ';
   static const char EQUALS = '=';
 
   std::unordered_map<std::string, std::string> map;
