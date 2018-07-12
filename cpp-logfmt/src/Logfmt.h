@@ -3,13 +3,13 @@
 
 #include <sstream>
 #include <string>
-#include <unordered_map>
+#include <map>
 
 class LogFmtMessage {
 public:
   std::string stringify() {
     std::ostringstream buffer;
-    std::unordered_map<std::string, std::string>::const_iterator it = map.begin(); 
+    std::map<std::string, std::string>::const_iterator it = map.begin(); 
     while(it != map.end()) {
       buffer << it->first << EQUALS << it->second;
       ++it;
@@ -48,7 +48,7 @@ private:
   static const char SEPARATOR = ' ';
   static const char EQUALS = '=';
 
-  std::unordered_map<std::string, std::string> map;
+  std::map<std::string, std::string> map;
 };
 
 #endif

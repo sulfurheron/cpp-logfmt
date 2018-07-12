@@ -12,7 +12,7 @@ logFmt.insert("bool_false", false);
 logFmt.insert("int", 10);
 logFmt.insert("float", 12.345f);
 
-logFmt.stringify(); // = string="some text" bool_true=true float=12.345000 bool_false=false int=10
+logFmt.stringify(); // =  bool_false=false bool_true=true float=12.345000 int=10 string="some text"
 ```
 
 ## Todo
