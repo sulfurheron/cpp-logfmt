@@ -4,11 +4,15 @@
 
 #include "Logfmt.h"
 
+bool fn_alpha_key_order(const std::string lhs, const std::string rhs) {
+  return lhs < rhs;
+}
+
 int main() {
 
   std::cout << "starting test" << std::endl;
 
-  LogFmtMessage logFmt;
+  LogFmtMessage logFmt(&fn_alpha_key_order);
 
   logFmt.insert("string", "some text");
   logFmt.insert("bool_true", true);
@@ -31,5 +35,4 @@ int main() {
   std::cout << "end" << std::endl;
 
   std::cin.ignore();
-
 }

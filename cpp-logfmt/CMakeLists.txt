@@ -7,7 +7,7 @@ add_definitions(-std=c++14 -g -O2 -pthread -fopenmp -Wall -Wextra)
 
 include_directories(./src)
 
-add_executable(test_logfmt
-        src/Logfmt.h
-        src/test.cpp)
-install(TARGETS test_logfmt DESTINATION bin)
+add_executable(test_logfmt_util
+        test/test_logfmt_util.cpp
+        src/Logfmt.h)
+install(TARGETS test_logfmt_util DESTINATION bin)
