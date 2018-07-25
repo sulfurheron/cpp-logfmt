@@ -8,48 +8,48 @@ using namespace kin_logfmt;
 template <class ...Args>
 void Logger::FATAL(const std::string& msg, const Args&... args) {
   if (FATAL_ <= log_level_) {
-    write(msg, args...);
+    write(FATAL_, msg, args...);
   }
 }
 
 template <class ...Args>
 void Logger::ERROR(const std::string& msg, const Args&... args) {
   if (ERROR_ <= log_level_) {
-    write(msg, args...);
+    write(ERROR_, msg, args...);
   }
 }
 
 template <class ...Args>
 void Logger::WARN(const std::string& msg, const Args&... args) {
   if (WARN_ <= log_level_) {
-    write(msg, args...);
+    write(WARN_, msg, args...);
   }
 }
 
 template <class ...Args>
 void Logger::WARNING(const std::string& msg, const Args&... args) {
   if (WARNING_ <= log_level_) {
-    write(msg, args...);
+    write(WARNING_, msg, args...);
   }
 }
 
 template <class ...Args>
 void Logger::INFO(const std::string& msg, const Args&... args) {
   if (INFO_ <= log_level_) {
-    write(msg, args...);
+    write(INFO_, msg, args...);
   }
 }
 
 template <class ...Args>
 void Logger::DEBUG(const std::string& msg, const Args&... args) {
   if (DEBUG_ <= log_level_) {
-    write(msg, args...);
+    write(DEBUG_, msg, args...);
   }
 }
 
 template <class ...Args>
-void Logger::write(const std::string& msg, const Args&... args) {
-  std::string metadata = compile_logfmt_metadata();
+void Logger::write(LEVEL level, const std::string& msg, const Args&... args) {
+  std::string metadata = compile_logfmt_metadata(level);
   std::string content = compile_logfmt_content(msg, args...);
 
   auto out = metadata + " " + content;

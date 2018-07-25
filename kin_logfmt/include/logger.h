@@ -38,6 +38,10 @@ namespace kin_logfmt {
   static_assert(sizeof(LEVEL_STR)/sizeof(std::string) == NUM_LEVELS,
                 "sizes don't match");
 
+  static std::string to_string(LEVEL level) {
+    return LEVEL_STR[(unsigned int)level];
+  }
+
   /*
     Comparison function(s) that Logger should use when printing logfmt key order
     Currently, we simply follow the order of the LOGFMT_KEY enum
@@ -73,7 +77,7 @@ namespace kin_logfmt {
     template <class ...Args>
     static std::string compile_logfmt_content(const std::string& msg, const Args&... args);
 
-    std::string compile_logfmt_metadata();
+    std::string compile_logfmt_metadata(LEVEL level);
 
     // Override sprintf
     // Throws SprintfException if the args do not comply
@@ -83,7 +87,7 @@ namespace kin_logfmt {
     private:
 
     template <class ...Args>
-    void write(const std::string& msg, const Args&... args);
+    void write(LEVEL level, const std::string& msg, const Args&... args);
 
     template <class ...Args>
     static std::vector<logfmt_kv_t> construct_kv_pairs(int arg_start, int arg_end, const Args&... args);

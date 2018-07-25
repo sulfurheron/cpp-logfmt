@@ -19,6 +19,7 @@ namespace kin_logfmt {
 
   // Reserved key fields
   enum class LOGFMT_KEY {
+    level,
     module,
     timestamp,
     msg,
@@ -30,9 +31,10 @@ namespace kin_logfmt {
   };
 
   static const std::string LOGFMT_KEY_STR[] = {
+    "level",
     "module",
     "timestamp",
-    "msg",
+    "message",
     "tag",
     "request_id",
     "client",

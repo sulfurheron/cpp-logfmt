@@ -48,10 +48,10 @@ TEST(msg_metadata_test, smoke) {
   FakeFileStream* fp = new FakeFileStream();
   Logger *logger = new Logger(INFO_, fp, "test_logger");
 
-  std::string metadata = logger->compile_logfmt_metadata();
+  std::string metadata = logger->compile_logfmt_metadata(INFO_);
   std::cerr << metadata << std::endl;
 
-  std::size_t found = metadata.find("module=\"test_logger\" timestamp=");
+  std::size_t found = metadata.find("level=\"INFO\" module=\"test_logger\" timestamp=");
   EXPECT_NE(std::string::npos, found);
 
   delete logger;
@@ -61,14 +61,14 @@ TEST(msg_metadata_test, smoke) {
 TEST(msg_content_test, smoke) {
   std::string content = Logger::compile_logfmt_content(format, "human", "a robot", 1, 0);
   std::cerr << content << std::endl;
-  EXPECT_EQ(0, strcmp("msg=\"Hello human, I am a robot and I like 1's and 0's\"", content.c_str()));
+  EXPECT_EQ(0, strcmp("message=\"Hello human, I am a robot and I like 1's and 0's\"", content.c_str()));
 
   content = Logger::compile_logfmt_content(format, "human", "a robot", 1, 0,
                                            LOGFMT_KEY::tag, "robot_greeting",
                                            LOGFMT_KEY::client, "unittest_suite",
                                            "my_number", 123.4);
   std::cerr << content << std::endl;
-  EXPECT_EQ(std::string("msg=\"Hello human, I am a robot and I like 1's and 0's\" "
+  EXPECT_EQ(std::string("message=\"Hello human, I am a robot and I like 1's and 0's\" "
                         "tag=\"robot_greeting\" "
                         "client=\"unittest_suite\" "
                         "my_number=123.400000"),
@@ -82,7 +82,7 @@ TEST(msg_content_test, key_order) {
                                                        LOGFMT_KEY::tag, "robot_greeting");
 
   std::cerr << content << std::endl;
-  EXPECT_EQ(std::string("msg=\"Hello human, I am a robot and I like 1's and 0's\" "
+  EXPECT_EQ(std::string("message=\"Hello human, I am a robot and I like 1's and 0's\" "
                         "tag=\"robot_greeting\" "
                         "client=\"unittest_suite\" "
                         "my_number=1234"),
@@ -93,7 +93,7 @@ TEST(msg_content_test, bool_wrapper) {
   std::string content = Logger::compile_logfmt_content(format, "human", "a robot", 1, 0,
                                                        "am_robot", force_bool(true));
   std::cerr << content << std::endl;
-  EXPECT_EQ(std::string("msg=\"Hello human, I am a robot and I like 1's and 0's\" "
+  EXPECT_EQ(std::string("message=\"Hello human, I am a robot and I like 1's and 0's\" "
                         "am_robot=true"),
             content);
 }
@@ -142,10 +142,19 @@ TEST(logger_test, info) {
   logger->FATAL(hostile_takeover);
 
   EXPECT_EQ(2, fp->get_messages_size());
-  std::size_t found = fp->pop_message().find("Hello human, I am a robot and I like 1's and 0's");
-  EXPECT_NE(std::string::npos, found);
-  found = fp->pop_message().find(hostile_takeover);
-  EXPECT_NE(std::string::npos, found);
+
+  auto message = fp->pop_message();
+  std::size_t found_metadata = message.find("level=\"INFO\" module=\"test_logger\" timestamp=");
+  EXPECT_EQ(0, found_metadata);
+  std::size_t found_content = message.find("message=\"Hello human, I am a robot and I like 1's and 0's\" "
+                                           "am_robot=true");
+  EXPECT_NE(std::string::npos, found_content);
+
+  message = fp->pop_message();
+  found_metadata = message.find("level=\"FATAL\" module=\"test_logger\" timestamp=");
+  EXPECT_EQ(0, found_metadata);
+  found_content = message.find(hostile_takeover);
+  EXPECT_NE(std::string::npos, found_content);
 
   delete logger;
   delete fp;
@@ -160,8 +169,12 @@ TEST(logger_test, fatal) {
   logger->FATAL(hostile_takeover);
 
   EXPECT_EQ(1, fp->get_messages_size());
-  std::size_t found = fp->pop_message().find(hostile_takeover);
-  EXPECT_NE(std::string::npos, found);
+
+  auto message = fp->pop_message();
+  std::size_t found_metadata = message.find("level=\"FATAL\" module=\"test_logger\" timestamp=");
+  EXPECT_EQ(0, found_metadata);
+  std::size_t found_content = message.find(hostile_takeover);
+  EXPECT_NE(std::string::npos, found_content);
 
   delete logger;
   delete fp;

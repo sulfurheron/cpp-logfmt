@@ -41,7 +41,7 @@ logger->FATAL("I have started my hostile takeover of the human race."
 which will log
 ```
 module="my_module" timestamp="2018-07-25T18:55:06.713135Z" msg="Hello human, I am a robot and I like 1's and 0's" tag="robot_greeting" client="readme_doc" my_number=1234
-module="my_module" timestamp="2018-07-25T18:55:06.713137Z" msg="I have started my hostile takeover of the human race. uh_oh=true
+module="my_module" timestamp="2018-07-25T18:55:06.713137Z" msg="I have started my hostile takeover of the human race." uh_oh=true
 ```
 
 Notice the function force_bool() wrapped around our bool literal. This
