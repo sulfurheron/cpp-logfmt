@@ -48,8 +48,8 @@ namespace kin_logfmt {
   typedef boost::variant<LOGFMT_KEY, char*, std::string> logfmt_key_t;
 
   /*
-    N.B. There is a bug converting char* types within boost::variant and other overloaded operators.
-         char* and bool will both be inferred as bool type. To get around this, we use a force_bool
+    N.B. There is a bug converting char* types within boost::variant and other overloaded operators:
+         char* and bool will both be deduced as the bool type. To get around this, we use a force_bool
          struct to explicity define bools
 
     https://stackoverflow.com/questions/13268608/boostvariant-why-is-const-char-converted-to-bool
@@ -61,6 +61,8 @@ namespace kin_logfmt {
     bool val_;
   };
 
+  // This struct asserts that a correct type is used for boost::variant logfmt_key_t
+  // The overloaded operator() must support every type enumerated in logfmt_key_and_value_union_t
   struct fn_assert_key_type : public boost::static_visitor<> {
     public:
 
@@ -96,7 +98,7 @@ namespace kin_logfmt {
   typedef boost::variant<char*, std::string, int, double, force_bool> logfmt_val_t;
 
   // This struct asserts that a correct type is used for boost::variant logfmt_val_t
-  // The overloaded operator() functions support logfmt_key_and_value_union_t
+  // The overloaded operator() must support every type enumerated in logfmt_key_and_value_union_t
   struct fn_assert_variable_content_type : public boost::static_visitor<> {
     public:
 
@@ -154,7 +156,7 @@ namespace kin_logfmt {
 
 
   // For ease in unpacking the variadic template, configure this union type to support both key and
-  // value types
+  // value-supported types
   typedef boost::variant<LOGFMT_KEY,char*,std::string,int,double,force_bool> logfmt_key_and_value_union_t;
 
   typedef std::pair<std::string,logfmt_val_t> logfmt_kv_t;

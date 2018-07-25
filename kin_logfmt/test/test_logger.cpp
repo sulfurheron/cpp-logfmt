@@ -10,17 +10,6 @@ using namespace kin_logfmt;
 
 const std::string format = "Hello %s, I am %s and I like %d\'s and %d\'s";
 
-// template <class ...Args>
-// int sprintf_arg_wrapper(char *buffer, const char* format, const int argc, const Args&... args) {
-//   return Logger::sprintf(buffer, format, argc, args...);
-// }
-
-// template <class ...Args>
-// std::string compile_logfmt_content_arg_wrapper(const std::string& msg, const Args&... args) {
-//   return Logger::compile_logfmt_content(msg, args...);
-// }
-
-
 TEST(sprintf_test, smoke) {
   char msg_buf[MAX_MSG_LENGTH];
   int num_args_formatted = Logger::sprintf(msg_buf, format.c_str(), 4, "human", "a robot", 1, 0);

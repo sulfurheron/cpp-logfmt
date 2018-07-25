@@ -37,4 +37,3 @@ RUN make install
 
 # Run test
 RUN /logfmt/usr/bin/test_logfmt_util
-
