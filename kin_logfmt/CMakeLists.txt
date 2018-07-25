@@ -12,6 +12,7 @@ include_directories(./include
 include_directories(${GTEST_INCLUDE_DIRS})
 
 add_library(logger
+    include/logger_impl.h
     src/logger.cpp
     src/file_stream.cpp)
 

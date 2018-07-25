@@ -2,20 +2,13 @@
 #define LOGGER_H
 
 #include <algorithm>
-#include<stdarg.h>    /* va_list, va_start, va_arg, va_end */
+#include <stdarg.h>    /* va_list, va_start, va_arg, va_end */
 
 #include "file_stream.h"
-#include "Logfmt.h"
+#include "logfmt_kv.h"
 
 struct SprintfException: public std::exception {
   SprintfException(const char* msg) : msg_(msg) {}
-
-  const char* what() const throw() { return msg_; }
-  const char* msg_;
-};
-
-struct LogfmtException : public std::exception {
-  LogfmtException(const char* msg) : msg_(msg) {}
 
   const char* what() const throw() { return msg_; }
   const char* msg_;
@@ -45,41 +38,11 @@ namespace kin_logfmt {
   static_assert(sizeof(LEVEL_STR)/sizeof(std::string) == NUM_LEVELS,
                 "sizes don't match");
 
-  typedef std::string logfmt_key_t;
-
-  // Reserved key fields
-  enum class LOGFMT_KEY {
-    module,
-    timestamp,
-    msg,
-    tag,
-    request_id,
-    client,
-
-    NUM_KEYS,
-  };
-
-  static const logfmt_key_t LOGFMT_KEY_STR[] = {
-    "module",
-    "timestamp",
-    "msg",
-    "tag",
-    "request_id",
-    "client",
-  };
-
-  static_assert(sizeof(LOGFMT_KEY_STR)/sizeof(logfmt_key_t) == (long unsigned int)(LOGFMT_KEY::NUM_KEYS),
-                "sizes don't match");
-
-  static logfmt_key_t to_string(LOGFMT_KEY key) {
-    return LOGFMT_KEY_STR[(unsigned int)key];
-  }
-
   /*
     Comparison function(s) that Logger should use when printing logfmt key order
     Currently, we simply follow the order of the LOGFMT_KEY enum
   */
-  static bool fn_default_key_order(const logfmt_key_t lhs, const logfmt_key_t rhs) {
+  static bool fn_default_key_order(const std::string lhs, const std::string rhs) {
     auto lhs_order = std::find(LOGFMT_KEY_STR, LOGFMT_KEY_STR+(unsigned int)LOGFMT_KEY::NUM_KEYS, lhs);
     auto rhs_order = std::find(LOGFMT_KEY_STR, LOGFMT_KEY_STR+(unsigned int)LOGFMT_KEY::NUM_KEYS, rhs);
     return lhs_order < rhs_order;
@@ -93,29 +56,44 @@ namespace kin_logfmt {
 
     Logger(LEVEL log_level, FileStream *stream, const std::string& module);
 
-    void FATAL(const std::string& msg, ...);
-    void ERROR(const std::string& msg, ...);
-    void WARN(const std::string& msg, ...);
-    void WARNING(const std::string& msg, ...);
-    void INFO(const std::string& msg, ...);
-    void DEBUG(const std::string& msg, ...);
+    template <class ...Args>
+    void FATAL(const std::string& msg, const Args&... args);
+    template <class ...Args>
+    void ERROR(const std::string& msg, const Args&... args);
+    template <class ...Args>
+    void WARN(const std::string& msg, const Args&... args);
+    template <class ...Args>
+    void WARNING(const std::string& msg, const Args&... args);
+    template <class ...Args>
+    void INFO(const std::string& msg, const Args&... args);
+    template <class ...Args>
+    void DEBUG(const std::string& msg, const Args&... args);
 
     // The following functions may throw LogfmtException if the format does not comply
-    static std::string compile_logfmt_content(const std::string& msg, va_list& args);
+    template <class ...Args>
+    static std::string compile_logfmt_content(const std::string& msg, const Args&... args);
+
     std::string compile_logfmt_metadata();
 
     // Override sprintf
     // Throws SprintfException if the args do not comply
-    static int sprintf(char *buffer, const char* format, const int arg_count, va_list& args);
+    template <class ...Args>
+    static int sprintf(char *buffer, const char* format, const int arg_count, const Args&... args);
 
     private:
 
-    void write(const std::string& msg, va_list& args);
+    template <class ...Args>
+    void write(const std::string& msg, const Args&... args);
+
+    template <class ...Args>
+    static std::vector<logfmt_kv_t> construct_kv_pairs(int arg_start, int arg_end, const Args&... args);
 
     LEVEL log_level_;
     FileStream *stream_;
     const std::string& module_name_;
   };
 }; // namespace kin_logfmt
+
+#include "logger_impl.h"
 
 #endif // LOGGER_H

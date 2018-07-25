@@ -2,7 +2,7 @@
 #define FILE_STREAM_H
 
 #include <string>
-#include <vector>
+#include <deque>
 
 namespace kin_logfmt {
 
@@ -26,9 +26,16 @@ namespace kin_logfmt {
     ~FakeFileStream() {}
     void write(const std::string &out);
 
+    int get_messages_size() { return messages_.size(); }
+    std::string pop_message() {
+      auto message = messages_.front();
+      messages_.pop_front();
+      return message;
+    }
+
     private:
 
-    std::vector<std::string> messages_;
+    std::deque<std::string> messages_;
   };
 
 }; // namespace kin_logfmt

@@ -39,7 +39,7 @@ class LogFmtMessage {
     logfmt_kv.insert({ first, std::to_string(second) });
   };
 
-  void insert(const std::string& first, const float& second) {
+  void insert(const std::string& first, const double& second) {
     logfmt_kv.insert({ first, std::to_string(second) });
   };
 

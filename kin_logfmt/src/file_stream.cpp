@@ -5,7 +5,7 @@
 using namespace kin_logfmt;
 
 void StdErr::write(const std::string &out) {
-  std::cerr << out.c_str();
+  std::cerr << out.c_str() << std::endl;
 }
 
 void FakeFileStream::write(const std::string &out) {
