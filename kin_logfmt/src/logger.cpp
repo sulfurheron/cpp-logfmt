@@ -6,11 +6,6 @@ using namespace boost::posix_time;
 using namespace kin_logfmt;
 
 
-Logger::Logger(LEVEL log_level, FileStream *stream, const std::string& module)
-  : log_level_(log_level),
-    stream_(stream), 
-    module_name_(module) {}
-
 std::string Logger::compile_logfmt_metadata(LEVEL level) {
   LogFmtMessage metadata_msg(&fn_default_key_order);
 

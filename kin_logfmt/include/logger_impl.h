@@ -6,6 +6,31 @@
 using namespace kin_logfmt;
 
 template <class ...Args>
+Logger::Logger(LEVEL log_level, FileStream *stream, const std::string& module, const Args&... args)
+  : log_level_(log_level),
+    stream_(stream), 
+    module_name_(module),
+    context_msg_(&fn_default_key_order) {
+
+  std::vector<logfmt_key_and_value_union_t> args_vec = {args...};
+
+  auto arg_count = args_vec.size();
+  // Check that args can be split into key-value pairs
+  if (arg_count % 2 != 0) {
+    throw LogfmtException("Key-value pairs are not even");
+  }
+
+  std::vector<logfmt_kv_t> kv_pairs = construct_kv_pairs(0,
+                                                         arg_count,
+                                                         args...);
+
+  for (auto it = kv_pairs.begin(); it != kv_pairs.end(); it++) {
+    fn_insert_variable_content_type insert_variable_content(context_msg_, it->first);
+    boost::apply_visitor(insert_variable_content, it->second);
+  }
+}
+
+template <class ...Args>
 void Logger::FATAL(const std::string& msg, const Args&... args) {
   if (FATAL_ <= log_level_) {
     write(FATAL_, msg, args...);
@@ -58,7 +83,7 @@ void Logger::write(LEVEL level, const std::string& msg, const Args&... args) {
 
 template <class ...Args>
 std::string Logger::compile_logfmt_content(const std::string& msg, const Args&... args) {
-  LogFmtMessage content_msg(&fn_default_key_order);
+  LogFmtMessage content_msg(context_msg_);
   std::vector<logfmt_key_and_value_union_t> args_vec = {args...};
 
   char msg_buf[MAX_MSG_LENGTH];
@@ -73,7 +98,7 @@ std::string Logger::compile_logfmt_content(const std::string& msg, const Args&..
   content_msg.insert(to_string(LOGFMT_KEY::msg), msg_buf);
 
   // Check that args can be split into key-value pairs
-  if (format_arg_count && (arg_count - format_arg_count) % 2 != 0) {
+  if ((arg_count - format_arg_count) % 2 != 0) {
     throw LogfmtException("Key-value pairs are not even");
   }
 

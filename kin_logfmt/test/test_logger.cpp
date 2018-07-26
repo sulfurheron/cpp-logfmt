@@ -59,11 +59,14 @@ TEST(msg_metadata_test, smoke) {
 }
 
 TEST(msg_content_test, smoke) {
-  std::string content = Logger::compile_logfmt_content(format, "human", "a robot", 1, 0);
+  FakeFileStream* fp = new FakeFileStream();
+  Logger *logger = new Logger(INFO_, fp, "test_logger");
+
+  std::string content = logger->compile_logfmt_content(format, "human", "a robot", 1, 0);
   std::cerr << content << std::endl;
   EXPECT_EQ(0, strcmp("message=\"Hello human, I am a robot and I like 1's and 0's\"", content.c_str()));
 
-  content = Logger::compile_logfmt_content(format, "human", "a robot", 1, 0,
+  content = logger->compile_logfmt_content(format, "human", "a robot", 1, 0,
                                            LOGFMT_KEY::tag, "robot_greeting",
                                            LOGFMT_KEY::client, "unittest_suite",
                                            "my_number", 123.4);
@@ -73,11 +76,17 @@ TEST(msg_content_test, smoke) {
                         "client=\"unittest_suite\" "
                         "my_number=123.400000"),
             content);
+
+  delete logger;
+  delete fp;
 }
 
 TEST(msg_content_test, key_order) {
-  std::string content = Logger::compile_logfmt_content(format, "human", "a robot", 1, 0,
-                                                       "my_number", 1234,
+  FakeFileStream* fp = new FakeFileStream();
+  Logger *logger = new Logger(INFO_, fp, "test_logger");
+
+  std::string content = logger->compile_logfmt_content(format, "human", "a robot", 1, 0,
+                                                       "my_number", 123.4,
                                                        LOGFMT_KEY::client, "unittest_suite",
                                                        LOGFMT_KEY::tag, "robot_greeting");
 
@@ -85,35 +94,53 @@ TEST(msg_content_test, key_order) {
   EXPECT_EQ(std::string("message=\"Hello human, I am a robot and I like 1's and 0's\" "
                         "tag=\"robot_greeting\" "
                         "client=\"unittest_suite\" "
-                        "my_number=1234"),
+                        "my_number=123.400000"),
             content);
+
+  delete logger;
+  delete fp;
 }
 
 TEST(msg_content_test, bool_wrapper) {
-  std::string content = Logger::compile_logfmt_content(format, "human", "a robot", 1, 0,
+  FakeFileStream* fp = new FakeFileStream();
+  Logger *logger = new Logger(INFO_, fp, "test_logger");
+
+  std::string content = logger->compile_logfmt_content(format, "human", "a robot", 1, 0,
                                                        "am_robot", force_bool(true));
   std::cerr << content << std::endl;
   EXPECT_EQ(std::string("message=\"Hello human, I am a robot and I like 1's and 0's\" "
                         "am_robot=true"),
             content);
+
+  delete logger;
+  delete fp;
 }
 
 TEST(msg_content_test, uneven_key_value) {
+  FakeFileStream* fp = new FakeFileStream();
+  Logger *logger = new Logger(INFO_, fp, "test_logger");
+
   bool caught_exception;
   try {
-    std::string content = Logger::compile_logfmt_content(format, "human", "a robot", 1, 0,
+    std::string content = logger->compile_logfmt_content(format, "human", "a robot", 1, 0,
                                                          "am_robot");
   } catch (LogfmtException &e) {
     caught_exception = true;
     EXPECT_EQ(0, strcmp("Key-value pairs are not even", e.what()));
   }
   EXPECT_TRUE(caught_exception);
+
+  delete logger;
+  delete fp;
 }
 
 TEST(msg_content_test, wrong_key_or_value_type) {
+  FakeFileStream* fp = new FakeFileStream();
+  Logger *logger = new Logger(INFO_, fp, "test_logger");
+
   bool caught_exception;
   try {
-    std::string content = Logger::compile_logfmt_content(format, "human", "a robot", 1, 0,
+    std::string content = logger->compile_logfmt_content(format, "human", "a robot", 1, 0,
                                                          PI, force_bool(true));
   } catch (LogfmtException &e) {
     caught_exception = true;
@@ -123,13 +150,16 @@ TEST(msg_content_test, wrong_key_or_value_type) {
 
   caught_exception = false;
   try {
-    std::string content = Logger::compile_logfmt_content(format, "human", "a robot", 1, 0,
+    std::string content = logger->compile_logfmt_content(format, "human", "a robot", 1, 0,
                                                          "am_robot", LOGFMT_KEY::tag);
   } catch (LogfmtException &e) {
     caught_exception = true;
     EXPECT_EQ(0, strcmp("LOGFMT_KEY was passed as type logfmt_val_t", e.what()));
   }
   EXPECT_TRUE(caught_exception);
+
+  delete logger;
+  delete fp;
 }
 
 TEST(logger_test, info) {
@@ -144,6 +174,7 @@ TEST(logger_test, info) {
   EXPECT_EQ(2, fp->get_messages_size());
 
   auto message = fp->pop_message();
+  std::cerr << message << std::endl;
   std::size_t found_metadata = message.find("level=\"INFO\" module=\"test_logger\" timestamp=");
   EXPECT_EQ(0, found_metadata);
   std::size_t found_content = message.find("message=\"Hello human, I am a robot and I like 1's and 0's\" "
@@ -151,6 +182,7 @@ TEST(logger_test, info) {
   EXPECT_NE(std::string::npos, found_content);
 
   message = fp->pop_message();
+  std::cerr << message << std::endl;
   found_metadata = message.find("level=\"FATAL\" module=\"test_logger\" timestamp=");
   EXPECT_EQ(0, found_metadata);
   found_content = message.find(hostile_takeover);
@@ -171,9 +203,31 @@ TEST(logger_test, fatal) {
   EXPECT_EQ(1, fp->get_messages_size());
 
   auto message = fp->pop_message();
+  std::cerr << message << std::endl;
   std::size_t found_metadata = message.find("level=\"FATAL\" module=\"test_logger\" timestamp=");
   EXPECT_EQ(0, found_metadata);
   std::size_t found_content = message.find(hostile_takeover);
+  EXPECT_NE(std::string::npos, found_content);
+
+  delete logger;
+  delete fp;
+}
+
+TEST(logger_test, init_with_context) {
+  FakeFileStream* fp = new FakeFileStream();
+  Logger *logger = new Logger(FATAL_, fp, "test_logger",
+                              "inclination", "hostile");
+
+  std::string hostile_takeover = "I have started my hostile takeover of the human race.";
+  logger->FATAL(hostile_takeover);
+
+  EXPECT_EQ(1, fp->get_messages_size());
+
+  auto message = fp->pop_message();
+  std::cerr << message << std::endl;
+  std::size_t found_metadata = message.find("level=\"FATAL\" module=\"test_logger\" timestamp=");
+  EXPECT_EQ(0, found_metadata);
+  std::size_t found_content = message.find(hostile_takeover + "\" inclination=\"hostile\"");
   EXPECT_NE(std::string::npos, found_content);
 
   delete logger;

@@ -17,9 +17,3 @@ KinLogfmt::~KinLogfmt() {
   }
   delete stream_;
 }
-
-Logger* KinLogfmt::newLogger(const std::string& module) {
-  auto logger = new Logger(log_level_, stream_, module);
-  loggers_.push_back(logger);
-  return logger;
-}

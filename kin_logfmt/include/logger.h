@@ -58,7 +58,8 @@ namespace kin_logfmt {
   class Logger {
     public:
 
-    Logger(LEVEL log_level, FileStream *stream, const std::string& module);
+    template <class ...Args>
+    Logger(LEVEL log_level, FileStream *stream, const std::string& module, const Args&... args);
 
     template <class ...Args>
     void FATAL(const std::string& msg, const Args&... args);
@@ -75,7 +76,7 @@ namespace kin_logfmt {
 
     // The following functions may throw LogfmtException if the format does not comply
     template <class ...Args>
-    static std::string compile_logfmt_content(const std::string& msg, const Args&... args);
+    std::string compile_logfmt_content(const std::string& msg, const Args&... args);
 
     std::string compile_logfmt_metadata(LEVEL level);
 
@@ -95,6 +96,8 @@ namespace kin_logfmt {
     LEVEL log_level_;
     FileStream *stream_;
     const std::string& module_name_;
+
+    LogFmtMessage context_msg_;
   };
 }; // namespace kin_logfmt
 

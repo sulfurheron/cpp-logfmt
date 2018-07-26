@@ -26,7 +26,8 @@ KinLogfmt logfmt(INFO_, new FakeFileStream()); // If no file stream is passed in
 
 Then, define new loggers for your modules like so:
 ```
-Logger *logger = logfmt.newLogger("my_module");
+Logger *logger = logfmt.newLogger("my_module",
+                                  "example", "context"); // additional context can be added in kv pairs
 ```
 
 You can then log your outputs as follows:
@@ -40,14 +41,25 @@ logger->FATAL("I have started my hostile takeover of the human race."
 ```
 which will log
 ```
-module="my_module" timestamp="2018-07-25T18:55:06.713135Z" msg="Hello human, I am a robot and I like 1's and 0's" tag="robot_greeting" client="readme_doc" my_number=1234
-module="my_module" timestamp="2018-07-25T18:55:06.713137Z" msg="I have started my hostile takeover of the human race." uh_oh=true
+level="INFO" module="my_module" timestamp="2018-07-25T18:55:06.713135Z" msg="Hello human, I am a robot and I like 1's and 0's" tag="robot_greeting" client="readme_doc" example="context" my_number=1234
+level="FATAL" module="my_module" timestamp="2018-07-25T18:55:06.713137Z" msg="I have started my hostile takeover of the human race." example="context" uh_oh=true
 ```
 
 Notice the function force_bool() wrapped around our bool literal. This
 is needed to ensure proper type deduction and is a C++ quirk I had to
 learn the hard way. [Read about it
 here.](https://stackoverflow.com/questions/13268608/boostvariant-why-is-const-char-converted-to-bool)
+
+The predefined LOGFMT_KEYs are as follows, and should be used wherever possible to standardize across logs:
+```
+level,      // metadata only, do not call
+module,     // metadata only, do not call
+timestamp,  // metadata only, do not call
+msg,        // automatically configured, do not call
+tag,
+request_id,
+client,
+```
 
 Cleanup is managed within the KinLogfmt object, so don't call delete on your loggers.
 
@@ -63,6 +75,7 @@ docker cp cpp-logfmt/ <container>:/logfmt
 ```
 and built in the container using
 ```
+cd /logfmt/kin_logfmt
 cmake -D CMAKE_BUILD_TYPE=Release -D CMAKE_INSTALL_PREFIX=/logfmt/usr . // run once
 make install                                                            // called from the package directory (kin_logfmt or cpp-logfmt)
 ```

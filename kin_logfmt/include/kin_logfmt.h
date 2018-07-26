@@ -14,7 +14,12 @@ namespace kin_logfmt {
     KinLogfmt(LEVEL log_level, FileStream *stream = NULL);
     ~KinLogfmt();
 
-    Logger* newLogger(const std::string& module);
+    template <class ...Args>
+    Logger* newLogger(const std::string& module, const Args&... args) {
+      auto logger = new Logger(log_level_, stream_, module, args...);
+      loggers_.push_back(logger);
+      return logger;
+    }
 
     private:
 
