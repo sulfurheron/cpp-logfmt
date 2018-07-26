@@ -11,7 +11,7 @@ namespace kin_logfmt {
   class KinLogfmt {
     public:
 
-    KinLogfmt(LEVEL log_level, FileStream *stream = NULL);
+    KinLogfmt(LEVEL log_level = INFO_, FileStream *stream = NULL);
     ~KinLogfmt();
 
     template <class ...Args>

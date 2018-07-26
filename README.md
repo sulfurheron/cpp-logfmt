@@ -10,11 +10,9 @@ formatter](https://github.com/kaidoe/cpp-logfmt) at its base.
 
 ## Usage
 
-TODO(JF): Flush this out more after POC
-
 Make sure to include the package header files and the kin_logfmt namespace using
 ```
-#include <kin_logfmt.h>
+#include <kin_logfmt/kin_logfmt.h>
 
 using namespace kin_logfmt;
 ```
@@ -41,8 +39,8 @@ logger->FATAL("I have started my hostile takeover of the human race."
 ```
 which will log
 ```
-level="INFO" module="my_module" timestamp="2018-07-25T18:55:06.713135Z" msg="Hello human, I am a robot and I like 1's and 0's" tag="robot_greeting" client="readme_doc" example="context" my_number=1234
-level="FATAL" module="my_module" timestamp="2018-07-25T18:55:06.713137Z" msg="I have started my hostile takeover of the human race." example="context" uh_oh=true
+level="INFO" module="my_module" timestamp="2018-07-25T18:55:06.713135Z" message="Hello human, I am a robot and I like 1's and 0's" tag="robot_greeting" client="readme_doc" example="context" my_number=1234
+level="FATAL" module="my_module" timestamp="2018-07-25T18:55:06.713137Z" message="I have started my hostile takeover of the human race." example="context" uh_oh=true
 ```
 
 Notice the function force_bool() wrapped around our bool literal. This

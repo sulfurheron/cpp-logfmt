@@ -234,6 +234,23 @@ TEST(logger_test, init_with_context) {
   delete fp;
 }
 
+TEST(logger_test, init_with_uneven_context) {
+  FakeFileStream* fp = new FakeFileStream();
+
+  bool caught_exception;
+  try {
+    Logger *logger = new Logger(INFO_, fp, "test_logger",
+                                "inclination");
+  } catch (LogfmtException &e) {
+    caught_exception = true;
+    EXPECT_EQ(0, strcmp("Error initializing logger: contextual key-value pairs are not even", e.what()));
+  }
+  EXPECT_TRUE(caught_exception);
+
+  delete fp;
+}
+
+
 int main(int argc, char** argv) {
   testing::InitGoogleTest(&argc, argv);
 

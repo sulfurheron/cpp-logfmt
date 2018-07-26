@@ -20,7 +20,13 @@ add_library(kin_logfmt
     src/kin_logfmt.cpp)
 target_link_libraries(kin_logfmt logger)
 
-install(TARGETS kin_logfmt DESTINATION lib)
+install(TARGETS kin_logfmt logger DESTINATION lib)
+install(FILES include/kin_logfmt.h
+              include/logger.h
+              include/logger_impl.h
+              include/file_stream.h
+              include/logfmt_kv.h
+        DESTINATION include/kin_logfmt)
 
 #############
 ## Testing ##

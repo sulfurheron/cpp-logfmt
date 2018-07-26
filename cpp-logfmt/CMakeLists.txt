@@ -11,3 +11,4 @@ add_executable(test_logfmt_util
         test/test_logfmt_util.cpp
         src/Logfmt.h)
 install(TARGETS test_logfmt_util DESTINATION bin)
+install(FILES src/Logfmt.h DESTINATION include/kin_logfmt)

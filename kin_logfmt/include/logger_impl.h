@@ -17,7 +17,7 @@ Logger::Logger(LEVEL log_level, FileStream *stream, const std::string& module, c
   auto arg_count = args_vec.size();
   // Check that args can be split into key-value pairs
   if (arg_count % 2 != 0) {
-    throw LogfmtException("Key-value pairs are not even");
+    throw LogfmtException("Error initializing logger: contextual key-value pairs are not even");
   }
 
   std::vector<logfmt_kv_t> kv_pairs = construct_kv_pairs(0,
