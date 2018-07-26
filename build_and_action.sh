@@ -5,4 +5,4 @@
 set -euo pipefail
 
 docker build . -t logfmt:build
-docker run -it --rm -v `pwd`:/ws -w /ws logfmt:build $1
+docker run -it --rm -v `pwd`:/logfmt logfmt:build $1

@@ -5,7 +5,6 @@
 #include <string>
 #include <map>
 
-
 class LogFmtMessage {
   public:
 
