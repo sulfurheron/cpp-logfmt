@@ -9,7 +9,7 @@ RUN apt-get update \
         && apt-get install -y --no-install-recommends \
            libgtest-dev \
            libboost-date-time-dev \
-           libboost-dev
+           libboost-dev \
         && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /logfmt/usr
