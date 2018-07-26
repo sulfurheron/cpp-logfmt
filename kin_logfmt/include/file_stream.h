@@ -3,6 +3,7 @@
 
 #include <string>
 #include <deque>
+#include <boost/thread/mutex.hpp>
 
 namespace kin_logfmt {
 
@@ -11,6 +12,8 @@ namespace kin_logfmt {
 
     virtual ~FileStream() {}
     virtual void write(const std::string &out) = 0;
+
+    boost::mutex writers_mtx_;
   };
 
   class StdErr : public FileStream {
@@ -26,12 +29,8 @@ namespace kin_logfmt {
     ~FakeFileStream() {}
     void write(const std::string &out);
 
-    int get_messages_size() { return messages_.size(); }
-    std::string pop_message() {
-      auto message = messages_.front();
-      messages_.pop_front();
-      return message;
-    }
+    int get_messages_size();
+    std::string pop_message();
 
     private:
 

@@ -9,6 +9,8 @@ RUN apt-get update \
         && apt-get install -y --no-install-recommends \
            libgtest-dev \
            libboost-date-time-dev \
+           libboost-system-dev \
+           libboost-thread-dev \
            libboost-dev \
         && rm -rf /var/lib/apt/lists/*
 
