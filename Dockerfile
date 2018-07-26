@@ -1,14 +1,16 @@
 FROM ubuntu:xenial
 
 RUN apt-get update \
-	&& apt-get install -y build-essential ruby-dev rubygems cmake \
-	&& gem install fpm
+        && apt-get install -y build-essential ruby-dev rubygems cmake \
+        && gem install fpm \
+        && rm -rf /var/lib/apt/lists/*
 
 RUN apt-get update \
         && apt-get install -y --no-install-recommends \
-        libgtest-dev \
-        libboost-date-time-dev \
-        libboost-dev
+           libgtest-dev \
+           libboost-date-time-dev \
+           libboost-dev
+        && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /logfmt/usr
 

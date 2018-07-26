@@ -37,7 +37,7 @@ TEST(sprintf_test, not_enough_args) {
     Logger::sprintf(msg_buf, format.c_str(), 2, "human", "a robot");
   } catch (SprintfException &e) {
     caught_exception = true;
-    EXPECT_EQ(0, strcmp("Not enough arguments sdfwerto pass into the format string: the logs may be erroneous.",
+    EXPECT_EQ(0, strcmp("Not enough arguments to pass into the format string: the logs may be erroneous.",
                         e.what()));
   }
   std::cerr << msg_buf << std::endl;

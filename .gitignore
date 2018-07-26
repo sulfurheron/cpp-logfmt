@@ -39,3 +39,4 @@ cmake_install.cmake
 install_manifest.txt
 usr/*
 test_logfmt_util
+logger_test

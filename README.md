@@ -63,19 +63,13 @@ Cleanup is managed within the KinLogfmt object, so don't call delete on your log
 
 ## Developing
 
-To develop on this repo, I usually use `build_and_action.sh bash` to build the Docker build
+To develop on this repo, I usually use `build_and_action.sh ./exec.sh` to build the Docker build
 container, install the libraries & executables, and kick me into the container for further
-testing. If they change during development, source files can be copied into the build container
-using (from git directory)
+testing. If they change during development, headers, libraries & executables can be rebuilt and
+reinstalled using
 ```
-docker cp kin_logfmt/ <container>:/logfmt
-docker cp cpp-logfmt/ <container>:/logfmt
-```
-and built in the container using
-```
-cd /logfmt/kin_logfmt
-cmake -D CMAKE_BUILD_TYPE=Release -D CMAKE_INSTALL_PREFIX=/logfmt/usr . // run once
-make install                                                            // called from the package directory (kin_logfmt or cpp-logfmt)
+cd /logfmt/kin_logfmt // or /logfmt/cpp-logfmt
+make install
 ```
 Then, tests can be run with
 ```
