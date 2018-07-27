@@ -24,23 +24,30 @@ KinLogfmt logfmt(INFO_, new FakeFileStream()); // If no file stream is passed in
 
 Then, define new loggers for your modules like so:
 ```
-Logger *logger = logfmt.newLogger("my_module",
+// in main.cpp
+Logger logger = logfmt.new_logger("my_module",
                                   "example", "context"); // additional context can be added in kv pairs
+
+// in other files where logger is passed in
+Logger sub_logger = logger.new_sub_logger("my_sub_module",
+                                          "additional", "context");
 ```
 
 You can then log your outputs as follows:
 ```
-logger->INFO("Hello %s, I am %s and I like %d\'s and %d\'s", "human", "a robot", 1, 0,
-             LOGFMT_KEY::tag, "robot_greeting",
-             LOGFMT_KEY::client, "readme_doc",
-             "my_number", 1234);
-logger->FATAL("I have started my hostile takeover of the human race."
-              "uh_oh", force_bool(true));
+logger.INFO("Hello %s, I am %s and I like %d\'s and %d\'s", "human", "a robot", 1, 0,
+            LOGFMT_KEY::tag, "robot_greeting",
+            LOGFMT_KEY::client, "readme_doc",
+            "my_number", 1234);
+logger.FATAL("I have started my hostile takeover of the human race."
+             "uh_oh", force_bool(true));
+sub_logger.FATAL("World destruction is imminent.");
 ```
 which will log
 ```
 level="INFO" module="my_module" timestamp="2018-07-25T18:55:06.713135Z" message="Hello human, I am a robot and I like 1's and 0's" tag="robot_greeting" client="readme_doc" example="context" my_number=1234
 level="FATAL" module="my_module" timestamp="2018-07-25T18:55:06.713137Z" message="I have started my hostile takeover of the human race." example="context" uh_oh=true
+level="FATAL" module="my_sub_module" timestamp="2018-07-25T18:55:06.713140Z" message="World destruction is imminent." additional="context" example="context" uh_oh=true
 ```
 
 Notice the function force_bool() wrapped around our bool literal. This

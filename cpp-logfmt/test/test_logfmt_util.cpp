@@ -20,9 +20,12 @@ int main() {
   logFmt.insert("int", 10);
   logFmt.insert("float", 12.345f);
 
+  // Test overwriting old values
+  logFmt.insert("int", 5);
+
   std::string stringifyResult = logFmt.stringify();
 
-  std::string correctResult("bool_false=false bool_true=true float=12.345000 int=10 string=\"some text\"");
+  std::string correctResult("bool_false=false bool_true=true float=12.345000 int=5 string=\"some text\"");
 
   if (stringifyResult.compare(correctResult) == 0) {
     std::cout << "test correct" << std::endl;

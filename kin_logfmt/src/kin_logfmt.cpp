@@ -12,8 +12,5 @@ KinLogfmt::KinLogfmt(LEVEL log_level, FileStream *stream)
 }
 
 KinLogfmt::~KinLogfmt() {
-  for (auto logger : loggers_) {
-    delete logger;
-  }
   delete stream_;
 }

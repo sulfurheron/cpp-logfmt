@@ -245,8 +245,8 @@ TEST(logger_test, init_with_uneven_context) {
 
   bool caught_exception;
   try {
-    Logger *logger = new Logger(INFO_, fp, "test_logger",
-                                "inclination");
+    new Logger(INFO_, fp, "test_logger",
+               "inclination");
   } catch (LogfmtException &e) {
     caught_exception = true;
     EXPECT_EQ(0, strcmp("Error initializing logger: contextual key-value pairs are not even", e.what()));
@@ -256,6 +256,29 @@ TEST(logger_test, init_with_uneven_context) {
   delete fp;
 }
 
+TEST(logger_test, init_sub_logger) {
+  FakeFileStream *fp = new FakeFileStream();
+
+  Logger *logger = new Logger(FATAL_, fp, "test_logger",
+                              "inclination", "hostile");
+
+  Logger sub_logger = logger->new_sub_logger("test_logger_jr",
+                                             "uh_oh", force_bool(true));
+  std::string hostile_takeover = "I have started my hostile takeover of the human race.";
+  sub_logger.FATAL(hostile_takeover);
+
+  EXPECT_EQ(1, fp->get_messages_size());
+
+  auto message = fp->pop_message();
+  std::cerr << message << std::endl;
+  std::size_t found_metadata = message.find("level=\"FATAL\" module=\"test_logger_jr\" timestamp=");
+  EXPECT_EQ(0, found_metadata);
+  std::size_t found_content = message.find(hostile_takeover + "\" inclination=\"hostile\" uh_oh=true");
+  EXPECT_NE(std::string::npos, found_content);
+
+  delete logger;
+  delete fp;
+}
 
 int main(int argc, char** argv) {
   testing::InitGoogleTest(&argc, argv);

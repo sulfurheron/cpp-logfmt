@@ -77,6 +77,9 @@ namespace kin_logfmt {
     Logger(LEVEL log_level, FileStream *stream, const std::string& module, const Args&... args);
 
     template <class ...Args>
+    Logger new_sub_logger(const std::string& module, const Args& ...args);
+
+    template <class ...Args>
     void FATAL(const std::string& msg, const Args&... args);
     template <class ...Args>
     void ERROR(const std::string& msg, const Args&... args);
@@ -104,6 +107,12 @@ namespace kin_logfmt {
 
     template <class ...Args>
     void write(LEVEL level, const std::string& msg, const Args&... args);
+
+    template <class ...Args>
+    void insert_new_logger_context(const Args&... args);
+
+    template <class ...Args>
+    void insert_new_content(int arg_start, int arg_end, LogFmtMessage &content, const Args&... args);
 
     template <class ...Args>
     static std::vector<logfmt_kv_t> construct_kv_pairs(int arg_start, int arg_end, const Args&... args);

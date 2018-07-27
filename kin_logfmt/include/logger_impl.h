@@ -12,23 +12,23 @@ Logger::Logger(LEVEL log_level, FileStream *stream, const std::string& module, c
     module_name_(module),
     context_msg_(&fn_default_key_order) {
 
-  std::vector<logfmt_key_and_value_union_t> args_vec = {args...};
-
-  auto arg_count = args_vec.size();
-  // Check that args can be split into key-value pairs
-  if (arg_count % 2 != 0) {
+  try {
+    insert_new_logger_context(args...);
+  } catch (LogfmtException &e) {
     throw LogfmtException("Error initializing logger: contextual key-value pairs are not even");
   }
+}
 
-  std::vector<logfmt_kv_t> kv_pairs = construct_kv_pairs(0,
-                                                         arg_count,
-                                                         args...);
+template <class ...Args>
+Logger Logger::new_sub_logger(const std::string& module, const Args& ...args) {
+  Logger sub_logger = *this;
 
-  fn_insert_variable_content_type insert_variable_content(context_msg_);
-  for (auto it = kv_pairs.begin(); it != kv_pairs.end(); it++) {
-    insert_variable_content.set_key(it->first);
-    boost::apply_visitor(insert_variable_content, it->second);
+  try {
+    sub_logger.insert_new_logger_context(args...);
+  } catch (LogfmtException &e) {
+    throw LogfmtException("Error initializing sub-logger: contextual key-value pairs are not even");
   }
+  return sub_logger;
 }
 
 template <class ...Args>
@@ -89,7 +89,7 @@ std::string Logger::compile_logfmt_content(const std::string& msg, const Args&..
 
   char msg_buf[MAX_MSG_LENGTH];
   int arg_count = args_vec.size();
-  int format_arg_count;
+  int format_arg_count = 0;
   try {
     format_arg_count = sprintf(msg_buf, msg.c_str(), arg_count, args...);
   } catch (SprintfException &e) {
@@ -97,14 +97,28 @@ std::string Logger::compile_logfmt_content(const std::string& msg, const Args&..
   }
 
   content_msg.insert(to_string(LOGFMT_KEY::msg), msg_buf);
+  insert_new_content(format_arg_count, arg_count, content_msg, args...);
 
+  return content_msg.stringify();
+}
+
+template <class ...Args>
+void Logger::insert_new_logger_context(const Args&... args) {
+  std::vector<logfmt_key_and_value_union_t> args_vec = {args...};
+
+  auto arg_count = args_vec.size();
+  insert_new_content(0, arg_count, context_msg_, args...);
+}
+
+template <class ...Args>
+void Logger::insert_new_content(int arg_start, int arg_end, LogFmtMessage &content_msg, const Args&... args) {
   // Check that args can be split into key-value pairs
-  if ((arg_count - format_arg_count) % 2 != 0) {
+  if ((arg_end - arg_start) % 2 != 0) {
     throw LogfmtException("Key-value pairs are not even");
   }
 
-  std::vector<logfmt_kv_t> kv_pairs = construct_kv_pairs(format_arg_count,
-                                                         arg_count,
+  std::vector<logfmt_kv_t> kv_pairs = construct_kv_pairs(arg_start,
+                                                         arg_end,
                                                          args...);
 
   fn_insert_variable_content_type insert_variable_content(content_msg);
@@ -112,8 +126,6 @@ std::string Logger::compile_logfmt_content(const std::string& msg, const Args&..
     insert_variable_content.set_key(it->first);
     boost::apply_visitor(insert_variable_content, it->second);
   }
-
-  return content_msg.stringify();
 }
 
 template <class ...Args>
