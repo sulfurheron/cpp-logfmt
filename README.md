@@ -68,13 +68,13 @@ container, install the libraries & executables, and kick me into the container f
 testing. If they change during development, headers, libraries & executables can be rebuilt and
 reinstalled using
 ```
-cd /logfmt/kin_logfmt // or /logfmt/cpp-logfmt
+cd /logfmt/kin_logfmt/build      // or /logfmt/cpp-logfmt/build
 make install
 ```
 Then, tests can be run with
 ```
-/logfmt/usr/bin/test_logfmt_util // tests the barebones logfmt data structure (cpp-logfmt)
-/logfmt/usr/bin/logger_test      // tests the kin_logfmt wrapper
+/output/usr/bin/test_logfmt_util // tests the barebones logfmt data structure (cpp-logfmt)
+/output/usr/bin/logger_test      // tests the kin_logfmt wrapper
 ```
 
 ## Packaging
