@@ -1,15 +1,18 @@
 
 #include <iostream>
-#include <unordered_map>
 #include <string>
 
 #include "Logfmt.h"
+
+bool fn_alpha_key_order(const std::string lhs, const std::string rhs) {
+  return lhs < rhs;
+}
 
 int main() {
 
   std::cout << "starting test" << std::endl;
 
-  LogFmtMessage logFmt;
+  LogFmtMessage logFmt(&fn_alpha_key_order);
 
   logFmt.insert("string", "some text");
   logFmt.insert("bool_true", true);
@@ -19,8 +22,7 @@ int main() {
 
   std::string stringifyResult = logFmt.stringify();
 
-  // this is a crappy test since unordered map obviously doesnt have any order
-  std::string correctResult("string=\"some text\" bool_true=true float=12.345000 bool_false=false int=10");
+  std::string correctResult("bool_false=false bool_true=true float=12.345000 int=10 string=\"some text\"");
 
   if (stringifyResult.compare(correctResult) == 0) {
     std::cout << "test correct" << std::endl;
@@ -33,5 +35,4 @@ int main() {
   std::cout << "end" << std::endl;
 
   std::cin.ignore();
-
 }

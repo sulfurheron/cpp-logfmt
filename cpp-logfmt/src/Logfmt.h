@@ -3,17 +3,22 @@
 
 #include <sstream>
 #include <string>
-#include <unordered_map>
+#include <map>
 
 class LogFmtMessage {
-public:
+  public:
+
+  LogFmtMessage(bool(*fn_order)(std::string,std::string)) {
+    logfmt_kv = std::map<std::string, std::string, bool(*)(std::string,std::string)>(fn_order);
+  }
+
   std::string stringify() {
     std::ostringstream buffer;
-    std::unordered_map<std::string, std::string>::const_iterator it = map.begin(); 
-    while(it != map.end()) {
+    std::map<std::string, std::string>::const_iterator it = logfmt_kv.begin();
+    while(it != logfmt_kv.end()) {
       buffer << it->first << EQUALS << it->second;
       ++it;
-      if (it != map.end()) buffer << SEPARATOR;
+      if (it != logfmt_kv.end()) buffer << SEPARATOR;
     }
     return buffer.str();
   };
@@ -22,7 +27,7 @@ public:
     std::string secondBuffer(second);
     secondBuffer.insert(0, 1, '"');
     secondBuffer.append(1, '"');
-    map.insert({ first, secondBuffer });
+    logfmt_kv.insert({ first, secondBuffer });
   };
 
   void insert(const std::string& first, const char* second) {
@@ -30,25 +35,27 @@ public:
   };
 
   void insert(const std::string& first, const int& second) {
-    map.insert({ first, std::to_string(second) });
+    logfmt_kv.insert({ first, std::to_string(second) });
   };
 
-  void insert(const std::string& first, const float& second) {
-    map.insert({ first, std::to_string(second) });
+  void insert(const std::string& first, const double& second) {
+    logfmt_kv.insert({ first, std::to_string(second) });
   };
 
   void insert(const std::string& first, const bool& second) {
     if (second) {
-      map.insert({ first, "true" });
+      logfmt_kv.insert({ first, "true" });
     } else {
-      map.insert({ first, "false" });
+      logfmt_kv.insert({ first, "false" });
     }
   };
-private:
+
+  private:
+
   static const char SEPARATOR = ' ';
   static const char EQUALS = '=';
 
-  std::unordered_map<std::string, std::string> map;
+  std::map<std::string, std::string, bool(*)(std::string,std::string)> logfmt_kv;
 };
 
 #endif

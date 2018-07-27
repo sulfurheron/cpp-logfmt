@@ -1,0 +1,26 @@
+version: 2
+jobs:
+  run_tests:
+    parallelism: 1
+    working_directory: ~/checkout
+    docker:
+      - image: circleci/python:3.6
+
+    steps:
+      - checkout:
+          path: ~/checkout
+
+      - setup_remote_docker:
+          docker_layer_caching: true
+
+      - run:
+          name: Run tests
+          command: |
+              docker build .
+
+workflows:
+  version: 2
+  all:
+    jobs:
+      - run_tests:
+          context: org-global
