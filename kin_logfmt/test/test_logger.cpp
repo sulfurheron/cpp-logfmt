@@ -69,12 +69,17 @@ TEST(msg_content_test, smoke) {
   content = logger->compile_logfmt_content(format, "human", "a robot", 1, 0,
                                            LOGFMT_KEY::tag, "robot_greeting",
                                            LOGFMT_KEY::client, "unittest_suite",
-                                           "my_number", 123.4);
+                                           "my_bool", force_bool(true),
+                                           "my_number", 123.4,
+                                           "my_string", "robots rule!");
+
   std::cerr << content << std::endl;
   EXPECT_EQ(std::string("message=\"Hello human, I am a robot and I like 1's and 0's\" "
                         "tag=\"robot_greeting\" "
                         "client=\"unittest_suite\" "
-                        "my_number=123.400000"),
+                        "my_bool=true "
+                        "my_number=123.400000 "
+                        "my_string=\"robots rule!\""),
             content);
 
   delete logger;
@@ -216,7 +221,8 @@ TEST(logger_test, fatal) {
 TEST(logger_test, init_with_context) {
   FakeFileStream* fp = new FakeFileStream();
   Logger *logger = new Logger(FATAL_, fp, "test_logger",
-                              "inclination", "hostile");
+                              "inclination", "hostile",
+                              "uh_oh", force_bool(true));
 
   std::string hostile_takeover = "I have started my hostile takeover of the human race.";
   logger->FATAL(hostile_takeover);
@@ -227,7 +233,7 @@ TEST(logger_test, init_with_context) {
   std::cerr << message << std::endl;
   std::size_t found_metadata = message.find("level=\"FATAL\" module=\"test_logger\" timestamp=");
   EXPECT_EQ(0, found_metadata);
-  std::size_t found_content = message.find(hostile_takeover + "\" inclination=\"hostile\"");
+  std::size_t found_content = message.find(hostile_takeover + "\" inclination=\"hostile\" uh_oh=true");
   EXPECT_NE(std::string::npos, found_content);
 
   delete logger;

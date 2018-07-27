@@ -44,12 +44,27 @@ namespace kin_logfmt {
 
   /*
     Comparison function(s) that Logger should use when printing logfmt key order
-    Currently, we simply follow the order of the LOGFMT_KEY enum
+    Currently, we first follow the order of the LOGFMT_KEY enum, and then alphanumeric order if the
+    key does not exist in enum
   */
   static bool fn_default_key_order(const std::string lhs, const std::string rhs) {
-    auto lhs_order = std::find(LOGFMT_KEY_STR, LOGFMT_KEY_STR+(unsigned int)LOGFMT_KEY::NUM_KEYS, lhs);
-    auto rhs_order = std::find(LOGFMT_KEY_STR, LOGFMT_KEY_STR+(unsigned int)LOGFMT_KEY::NUM_KEYS, rhs);
-    return lhs_order < rhs_order;
+    auto logfmt_key_end = LOGFMT_KEY_STR+(unsigned int)LOGFMT_KEY::NUM_KEYS;
+
+    auto lhs_order = std::find(LOGFMT_KEY_STR, logfmt_key_end, lhs);
+    auto rhs_order = std::find(LOGFMT_KEY_STR, logfmt_key_end, rhs);
+
+    if (lhs_order != logfmt_key_end && rhs_order != logfmt_key_end) {
+      // Both keys are in enum, return the proper order
+      return lhs_order < rhs_order;
+    } else if (lhs_order != logfmt_key_end) {
+      // lhs key is in enum, but rhs is not
+      return true;
+    } else if (rhs_order != logfmt_key_end) {
+      // rhs key is in enum, but lhs is not
+      return false;
+    }
+    // Return in alphanumeric order
+    return lhs < rhs;
   }
 
   const int MAX_MSG_LENGTH = 500;

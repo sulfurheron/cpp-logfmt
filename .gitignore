@@ -34,3 +34,6 @@
 # Build
 cpp-logfmt/build/
 kin_logfmt/build/
+
+# Packages
+*.deb

@@ -137,9 +137,12 @@ namespace kin_logfmt {
   struct fn_insert_variable_content_type : public boost::static_visitor<> {
     public:
 
-    fn_insert_variable_content_type(LogFmtMessage &msg, const std::string &key)
-      : msg_(msg),
-        key_(key) {}
+    fn_insert_variable_content_type(LogFmtMessage &msg)
+      : msg_(msg) {}
+
+    void set_key(const std::string &key) {
+      key_ = key;
+    }
 
     void operator()(const force_bool b) {
       msg_.insert(key_, b.val_);

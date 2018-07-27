@@ -24,8 +24,9 @@ Logger::Logger(LEVEL log_level, FileStream *stream, const std::string& module, c
                                                          arg_count,
                                                          args...);
 
+  fn_insert_variable_content_type insert_variable_content(context_msg_);
   for (auto it = kv_pairs.begin(); it != kv_pairs.end(); it++) {
-    fn_insert_variable_content_type insert_variable_content(context_msg_, it->first);
+    insert_variable_content.set_key(it->first);
     boost::apply_visitor(insert_variable_content, it->second);
   }
 }
@@ -106,8 +107,9 @@ std::string Logger::compile_logfmt_content(const std::string& msg, const Args&..
                                                          arg_count,
                                                          args...);
 
+  fn_insert_variable_content_type insert_variable_content(content_msg);
   for (auto it = kv_pairs.begin(); it != kv_pairs.end(); it++) {
-    fn_insert_variable_content_type insert_variable_content(content_msg, it->first);
+    insert_variable_content.set_key(it->first);
     boost::apply_visitor(insert_variable_content, it->second);
   }
 
