@@ -2,6 +2,8 @@
 #define LOGGER_IMPL_H
 
 #include "logfmt_kv.h"
+#include "file_stream.h"
+
 
 using namespace kin_logfmt;
 
@@ -79,6 +81,10 @@ void Logger::write(LEVEL level, const std::string& msg, const Args&... args) {
   std::string content = compile_logfmt_content(msg, args...);
 
   auto out = metadata + " " + content;
+
+  if (stream_ == NULL) {
+    throw StreamWritingException("Logger was not iniitalized: write called on a NULL stream");
+  }
   stream_->write(out);
 }
 

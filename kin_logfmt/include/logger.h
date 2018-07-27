@@ -74,7 +74,7 @@ namespace kin_logfmt {
     public:
 
     template <class ...Args>
-    Logger(LEVEL log_level, FileStream *stream, const std::string& module, const Args&... args);
+    Logger(LEVEL log_level = INFO_, FileStream *stream = NULL, const std::string& module = "", const Args&... args);
 
     template <class ...Args>
     Logger new_sub_logger(const std::string& module, const Args& ...args);

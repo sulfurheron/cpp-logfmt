@@ -280,6 +280,20 @@ TEST(logger_test, init_sub_logger) {
   delete fp;
 }
 
+TEST(logger_test, null_stream) {
+  Logger logger;
+
+  bool caught_exception;
+  try {
+    logger.INFO("Test");
+  } catch (StreamWritingException &e) {
+    caught_exception = true;
+    EXPECT_EQ(0, strcmp("Logger was not iniitalized: write called on a NULL stream", e.what()));
+  }
+  EXPECT_TRUE(caught_exception);
+}
+
+
 int main(int argc, char** argv) {
   testing::InitGoogleTest(&argc, argv);
 
