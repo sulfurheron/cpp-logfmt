@@ -47,7 +47,7 @@ which will log
 ```
 level="INFO" module="my_module" timestamp="2018-07-25T18:55:06.713135Z" message="Hello human, I am a robot and I like 1's and 0's" tag="robot_greeting" client="readme_doc" example="context" my_number=1234
 level="FATAL" module="my_module" timestamp="2018-07-25T18:55:06.713137Z" message="I have started my hostile takeover of the human race." example="context" uh_oh=true
-level="FATAL" module="my_sub_module" timestamp="2018-07-25T18:55:06.713140Z" message="World destruction is imminent." additional="context" example="context" uh_oh=true
+level="FATAL" module="my_sub_module" timestamp="2018-07-25T18:55:06.713140Z" message="World destruction is imminent." additional="context" example="context"
 ```
 
 Notice the function force_bool() wrapped around our bool literal. This
