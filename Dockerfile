@@ -24,23 +24,23 @@ RUN cmake . \
 
 # build programs
 COPY cpp-logfmt/ /logfmt/cpp-logfmt/
-WORKDIR /logfmt/cpp-logfmt
+WORKDIR /logfmt/cpp-logfmt/build
 RUN cmake \
     -D CMAKE_BUILD_TYPE=Release \
-    -D CMAKE_INSTALL_PREFIX=/logfmt/usr \
-    .
-RUN make install
+    -D CMAKE_INSTALL_PREFIX=/output/usr \
+    .. \
+    && make install
 
 COPY kin_logfmt/ /logfmt/kin_logfmt/
-WORKDIR /logfmt/kin_logfmt
+WORKDIR /logfmt/kin_logfmt/build
 RUN cmake \
     -D CMAKE_BUILD_TYPE=Release \
-    -D CMAKE_INSTALL_PREFIX=/logfmt/usr \
-    .
-RUN make install
+    -D CMAKE_INSTALL_PREFIX=/output/usr \
+    .. \
+    && make install
 
 # Run test
-RUN /logfmt/usr/bin/test_logfmt_util
-RUN /logfmt/usr/bin/logger_test
+RUN /output/usr/bin/test_logfmt_util
+RUN /output/usr/bin/logger_test
 
 WORKDIR /logfmt/

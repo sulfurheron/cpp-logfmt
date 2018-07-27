@@ -32,11 +32,5 @@
 *#
 
 # Build
-CMakeCache.txt
-CMakeFiles
-Makefile
-cmake_install.cmake
-install_manifest.txt
-usr/*
-test_logfmt_util
-logger_test
+cpp-logfmt/build/
+kin_logfmt/build/
