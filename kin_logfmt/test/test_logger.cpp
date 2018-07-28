@@ -262,18 +262,28 @@ TEST(logger_test, init_sub_logger) {
   Logger *logger = new Logger(FATAL_, fp, "test_logger",
                               "inclination", "hostile");
 
-  Logger sub_logger = logger->new_sub_logger("test_logger_jr",
-                                             "uh_oh", force_bool(true));
   std::string hostile_takeover = "I have started my hostile takeover of the human race.";
+  logger->FATAL(hostile_takeover);
+
+  Logger sub_logger = logger->new_sub_logger("test_logger_jr",
+                                             "inclination", "apocalyptic",
+                                             "uh_oh", force_bool(true));
   sub_logger.FATAL(hostile_takeover);
 
-  EXPECT_EQ(1, fp->get_messages_size());
+  EXPECT_EQ(2, fp->get_messages_size());
 
   auto message = fp->pop_message();
   std::cerr << message << std::endl;
-  std::size_t found_metadata = message.find("level=\"FATAL\" module=\"test_logger_jr\" timestamp=");
+  std::size_t found_metadata = message.find("level=\"FATAL\" module=\"test_logger\" timestamp=");
   EXPECT_EQ(0, found_metadata);
-  std::size_t found_content = message.find(hostile_takeover + "\" inclination=\"hostile\" uh_oh=true");
+  std::size_t found_content = message.find(hostile_takeover + "\" inclination=\"hostile\"");
+  EXPECT_NE(std::string::npos, found_content);
+
+  message = fp->pop_message();
+  std::cerr << message << std::endl;
+  found_metadata = message.find("level=\"FATAL\" module=\"test_logger_jr\" timestamp=");
+  EXPECT_EQ(0, found_metadata);
+  found_content = message.find(hostile_takeover + "\" inclination=\"apocalyptic\" uh_oh=true");
   EXPECT_NE(std::string::npos, found_content);
 
   delete logger;
