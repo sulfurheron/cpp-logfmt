@@ -28,7 +28,7 @@ Then, define new loggers for your modules like so:
 Logger logger = logfmt.new_logger("my_module",
                                   "example", "context"); // additional context can be added in kv pairs
 
-// in other files where logger is passed in
+// in other files where logger is passed in (assign at declaration, or use a copy constructor)
 Logger sub_logger = logger.new_sub_logger("my_sub_module",
                                           "additional", "context");
 ```

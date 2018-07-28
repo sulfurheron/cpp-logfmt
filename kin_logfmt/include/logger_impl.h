@@ -23,7 +23,7 @@ Logger::Logger(LEVEL log_level, FileStream *stream, const std::string& module, c
 
 template <class ...Args>
 Logger Logger::new_sub_logger(const std::string& module, const Args& ...args) {
-  Logger sub_logger = *this;
+  Logger sub_logger(*this, module);
 
   try {
     sub_logger.insert_new_logger_context(args...);

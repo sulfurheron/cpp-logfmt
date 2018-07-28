@@ -261,13 +261,14 @@ TEST(logger_test, init_sub_logger) {
 
   Logger *logger = new Logger(FATAL_, fp, "test_logger",
                               "inclination", "hostile");
-
   std::string hostile_takeover = "I have started my hostile takeover of the human race.";
   logger->FATAL(hostile_takeover);
 
-  Logger sub_logger = logger->new_sub_logger("test_logger_jr",
-                                             "inclination", "apocalyptic",
-                                             "uh_oh", force_bool(true));
+  // N.B. sub_logger can only be copy-constructed or assigned at declaration; there is no support
+  // for the assignment operator.
+  Logger sub_logger(logger->new_sub_logger("test_logger_jr",
+                                           "inclination", "apocalyptic",
+                                           "uh_oh", force_bool(true)));
   sub_logger.FATAL(hostile_takeover);
 
   EXPECT_EQ(2, fp->get_messages_size());
