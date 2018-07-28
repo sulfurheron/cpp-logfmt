@@ -25,8 +25,11 @@ KinLogfmt logfmt(INFO_, new FakeFileStream()); // If no file stream is passed in
 Then, define new loggers for your modules like so:
 ```
 // in main.cpp
-Logger logger = logfmt.new_logger("my_module",
-                                  "example", "context"); // additional context can be added in kv pairs
+static Logger *logger;
+
+// in main(args)
+logger = logfmt.new_logger("my_module",
+                           "example", "context"); // additional context can be added in kv pairs
 
 // in other files where logger is passed in (assign at declaration, or use a copy constructor)
 Logger sub_logger = logger.new_sub_logger("my_sub_module",
@@ -35,12 +38,12 @@ Logger sub_logger = logger.new_sub_logger("my_sub_module",
 
 You can then log your outputs as follows:
 ```
-logger.INFO("Hello %s, I am %s and I like %d\'s and %d\'s", "human", "a robot", 1, 0,
-            LOGFMT_KEY::tag, "robot_greeting",
-            LOGFMT_KEY::client, "readme_doc",
-            "my_number", 1234);
-logger.FATAL("I have started my hostile takeover of the human race."
-             "uh_oh", force_bool(true));
+logger->INFO("Hello %s, I am %s and I like %d\'s and %d\'s", "human", "a robot", 1, 0,
+             LOGFMT_KEY::tag, "robot_greeting",
+             LOGFMT_KEY::client, "readme_doc",
+             "my_number", 1234);
+logger->FATAL("I have started my hostile takeover of the human race."
+              "uh_oh", force_bool(true));
 sub_logger.FATAL("World destruction is imminent.");
 ```
 which will log
