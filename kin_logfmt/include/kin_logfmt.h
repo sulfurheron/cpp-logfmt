@@ -16,13 +16,17 @@ namespace kin_logfmt {
 
     template <class ...Args>
     Logger* new_logger(const std::string& module, const Args&... args) {
-      return new Logger(log_level_, stream_, module, args...);
+      auto logger = new Logger(log_level_, stream_, module, args...);
+      loggers_.push_back(logger);
+      return logger;
     }
 
     private:
 
     LEVEL log_level_;
     FileStream *stream_;
+
+    std::vector<Logger*> loggers_;
   };
 
 }; // namespace kin_logfmt

@@ -8,7 +8,7 @@
 using namespace kin_logfmt;
 
 template <class ...Args>
-Logger::Logger(LEVEL log_level, FileStream *stream, const std::string& module, const Args&... args)
+Logger::Logger(LEVEL log_level, FileStream *stream, const std::string module, const Args&... args)
   : log_level_(log_level),
     stream_(stream), 
     module_name_(module),
@@ -22,7 +22,7 @@ Logger::Logger(LEVEL log_level, FileStream *stream, const std::string& module, c
 }
 
 template <class ...Args>
-Logger Logger::new_sub_logger(const std::string& module, const Args& ...args) {
+Logger Logger::new_sub_logger(const std::string module, const Args& ...args) {
   Logger sub_logger(*this, module);
 
   try {

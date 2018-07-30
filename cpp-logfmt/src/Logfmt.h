@@ -42,6 +42,14 @@ class LogFmtMessage {
     logfmt_kv[first] = std::to_string(second);
   };
 
+  void insert(const std::string& first, const long long& second) {
+    logfmt_kv[first] = std::to_string(second);
+  };
+
+  void insert(const std::string& first, const unsigned long long& second) {
+    logfmt_kv[first] = std::to_string(second);
+  };
+
   void insert(const std::string& first, const bool& second) {
     if (second) {
       logfmt_kv[first] = "true";

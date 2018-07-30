@@ -74,7 +74,7 @@ namespace kin_logfmt {
     public:
 
     template <class ...Args>
-    Logger(LEVEL log_level = INFO_, FileStream *stream = NULL, const std::string& module = "", const Args&... args);
+    Logger(LEVEL log_level = INFO_, FileStream *stream = NULL, const std::string module = "", const Args&... args);
 
     // Copy constructor needs to be well defined to initialize (const) module_name_ field
     // https://stackoverflow.com/questions/47090726/what-default-definition-would-be-ill-formed-means?rq=1
@@ -85,7 +85,7 @@ namespace kin_logfmt {
         context_msg_(logger.context_msg_) {}
 
     template <class ...Args>
-    Logger new_sub_logger(const std::string& module, const Args& ...args);
+    Logger new_sub_logger(const std::string module, const Args& ...args);
 
     template <class ...Args>
     void FATAL(const std::string& msg, const Args&... args);
@@ -113,7 +113,7 @@ namespace kin_logfmt {
 
     private:
 
-    Logger(const Logger &logger, const std::string& module)
+    Logger(const Logger &logger, const std::string module)
       : log_level_(logger.log_level_),
         stream_(logger.stream_),
         module_name_(module),
@@ -135,7 +135,7 @@ namespace kin_logfmt {
 
     LEVEL log_level_;
     FileStream *stream_;
-    const std::string& module_name_;
+    const std::string module_name_;
 
     LogFmtMessage context_msg_;
   };

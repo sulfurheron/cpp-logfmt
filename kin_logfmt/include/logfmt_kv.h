@@ -88,6 +88,14 @@ namespace kin_logfmt {
       throw LogfmtException("double was passed as type logfmt_key_t");
     }
 
+    void operator()(const long long) {
+      throw LogfmtException("long long was passed as type logfmt_key_t");
+    }
+
+    void operator()(const unsigned long long) {
+      throw LogfmtException("unsigned long long was passed as type logfmt_key_t");
+    }
+
     void operator()(const force_bool) {
       throw LogfmtException("bool was passed as type logfmt_key_t");
     }
@@ -97,7 +105,7 @@ namespace kin_logfmt {
 
   /* The following definitions are used for the logfmt value type */
 
-  typedef boost::variant<char*, std::string, int, double, force_bool> logfmt_val_t;
+  typedef boost::variant<char*, std::string, int, double, long long, unsigned long long, force_bool> logfmt_val_t;
 
   // This struct asserts that a correct type is used for boost::variant logfmt_val_t
   // The overloaded operator() must support every type enumerated in logfmt_key_and_value_union_t
@@ -125,6 +133,14 @@ namespace kin_logfmt {
 
     void operator()(const double f) {
       val_ = f;
+    }
+
+    void operator()(const long long ll) {
+      val_ = ll;
+    }
+
+    void operator()(const unsigned long long ull) {
+      val_ = ull;
     }
 
     void operator()(const force_bool b) {
@@ -162,7 +178,7 @@ namespace kin_logfmt {
 
   // For ease in unpacking the variadic template, configure this union type to support both key and
   // value-supported types
-  typedef boost::variant<LOGFMT_KEY,char*,std::string,int,double,force_bool> logfmt_key_and_value_union_t;
+  typedef boost::variant<LOGFMT_KEY,char*,std::string,int,double,long long,unsigned long long,force_bool> logfmt_key_and_value_union_t;
 
   typedef std::pair<std::string,logfmt_val_t> logfmt_kv_t;
 

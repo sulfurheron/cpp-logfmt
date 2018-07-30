@@ -71,7 +71,8 @@ TEST(msg_content_test, smoke) {
                                            LOGFMT_KEY::client, "unittest_suite",
                                            "my_bool", force_bool(true),
                                            "my_number", 123.4,
-                                           "my_string", "robots rule!");
+                                           "my_string", "robots rule!",
+                                           "my_unsigned_long_long", (unsigned long long)1 << 40);
 
   std::cerr << content << std::endl;
   EXPECT_EQ(std::string("message=\"Hello human, I am a robot and I like 1's and 0's\" "
@@ -79,7 +80,8 @@ TEST(msg_content_test, smoke) {
                         "client=\"unittest_suite\" "
                         "my_bool=true "
                         "my_number=123.400000 "
-                        "my_string=\"robots rule!\""),
+                        "my_string=\"robots rule!\" "
+                        "my_unsigned_long_long=1099511627776"),
             content);
 
   delete logger;

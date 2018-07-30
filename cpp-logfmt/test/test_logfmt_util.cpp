@@ -19,13 +19,14 @@ int main() {
   logFmt.insert("bool_false", false);
   logFmt.insert("int", 10);
   logFmt.insert("float", 12.345f);
+  logFmt.insert("unsigned_long_long", (unsigned long long)1 << 40);
 
   // Test overwriting old values
   logFmt.insert("int", 5);
 
   std::string stringifyResult = logFmt.stringify();
 
-  std::string correctResult("bool_false=false bool_true=true float=12.345000 int=5 string=\"some text\"");
+  std::string correctResult("bool_false=false bool_true=true float=12.345000 int=5 string=\"some text\" unsigned_long_long=1099511627776");
 
   if (stringifyResult.compare(correctResult) == 0) {
     std::cout << "test correct" << std::endl;
