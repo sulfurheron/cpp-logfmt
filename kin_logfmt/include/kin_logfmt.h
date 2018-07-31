@@ -15,7 +15,7 @@ namespace kin_logfmt {
     ~KinLogfmt();
 
     template <class ...Args>
-    Logger* newLogger(const std::string& module, const Args&... args) {
+    Logger* new_logger(const std::string& module, const Args&... args) {
       auto logger = new Logger(log_level_, stream_, module, args...);
       loggers_.push_back(logger);
       return logger;

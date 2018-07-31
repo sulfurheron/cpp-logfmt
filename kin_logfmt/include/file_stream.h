@@ -5,6 +5,14 @@
 #include <deque>
 #include <boost/thread/mutex.hpp>
 
+
+struct StreamWritingException : public std::exception {
+  StreamWritingException(const char* msg) : msg_(msg) {}
+
+  const char* what() const throw() { return msg_; }
+  const char* msg_;
+};
+
 namespace kin_logfmt {
 
   class FileStream {

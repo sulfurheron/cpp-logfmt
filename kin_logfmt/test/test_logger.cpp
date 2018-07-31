@@ -69,12 +69,19 @@ TEST(msg_content_test, smoke) {
   content = logger->compile_logfmt_content(format, "human", "a robot", 1, 0,
                                            LOGFMT_KEY::tag, "robot_greeting",
                                            LOGFMT_KEY::client, "unittest_suite",
-                                           "my_number", 123.4);
+                                           "my_bool", force_bool(true),
+                                           "my_number", 123.4,
+                                           "my_string", "robots rule!",
+                                           "my_unsigned_long_long", (unsigned long long)1 << 40);
+
   std::cerr << content << std::endl;
   EXPECT_EQ(std::string("message=\"Hello human, I am a robot and I like 1's and 0's\" "
                         "tag=\"robot_greeting\" "
                         "client=\"unittest_suite\" "
-                        "my_number=123.400000"),
+                        "my_bool=true "
+                        "my_number=123.400000 "
+                        "my_string=\"robots rule!\" "
+                        "my_unsigned_long_long=1099511627776"),
             content);
 
   delete logger;
@@ -216,7 +223,8 @@ TEST(logger_test, fatal) {
 TEST(logger_test, init_with_context) {
   FakeFileStream* fp = new FakeFileStream();
   Logger *logger = new Logger(FATAL_, fp, "test_logger",
-                              "inclination", "hostile");
+                              "inclination", "hostile",
+                              "uh_oh", force_bool(true));
 
   std::string hostile_takeover = "I have started my hostile takeover of the human race.";
   logger->FATAL(hostile_takeover);
@@ -227,7 +235,7 @@ TEST(logger_test, init_with_context) {
   std::cerr << message << std::endl;
   std::size_t found_metadata = message.find("level=\"FATAL\" module=\"test_logger\" timestamp=");
   EXPECT_EQ(0, found_metadata);
-  std::size_t found_content = message.find(hostile_takeover + "\" inclination=\"hostile\"");
+  std::size_t found_content = message.find(hostile_takeover + "\" inclination=\"hostile\" uh_oh=true");
   EXPECT_NE(std::string::npos, found_content);
 
   delete logger;
@@ -239,8 +247,8 @@ TEST(logger_test, init_with_uneven_context) {
 
   bool caught_exception;
   try {
-    Logger *logger = new Logger(INFO_, fp, "test_logger",
-                                "inclination");
+    new Logger(INFO_, fp, "test_logger",
+               "inclination");
   } catch (LogfmtException &e) {
     caught_exception = true;
     EXPECT_EQ(0, strcmp("Error initializing logger: contextual key-value pairs are not even", e.what()));
@@ -248,6 +256,54 @@ TEST(logger_test, init_with_uneven_context) {
   EXPECT_TRUE(caught_exception);
 
   delete fp;
+}
+
+TEST(logger_test, init_sub_logger) {
+  FakeFileStream *fp = new FakeFileStream();
+
+  Logger *logger = new Logger(FATAL_, fp, "test_logger",
+                              "inclination", "hostile");
+  std::string hostile_takeover = "I have started my hostile takeover of the human race.";
+  logger->FATAL(hostile_takeover);
+
+  // N.B. sub_logger can only be copy-constructed or assigned at declaration; there is no support
+  // for the assignment operator.
+  Logger sub_logger(logger->new_sub_logger("test_logger_jr",
+                                           "inclination", "apocalyptic",
+                                           "uh_oh", force_bool(true)));
+  sub_logger.FATAL(hostile_takeover);
+
+  EXPECT_EQ(2, fp->get_messages_size());
+
+  auto message = fp->pop_message();
+  std::cerr << message << std::endl;
+  std::size_t found_metadata = message.find("level=\"FATAL\" module=\"test_logger\" timestamp=");
+  EXPECT_EQ(0, found_metadata);
+  std::size_t found_content = message.find(hostile_takeover + "\" inclination=\"hostile\"");
+  EXPECT_NE(std::string::npos, found_content);
+
+  message = fp->pop_message();
+  std::cerr << message << std::endl;
+  found_metadata = message.find("level=\"FATAL\" module=\"test_logger_jr\" timestamp=");
+  EXPECT_EQ(0, found_metadata);
+  found_content = message.find(hostile_takeover + "\" inclination=\"apocalyptic\" uh_oh=true");
+  EXPECT_NE(std::string::npos, found_content);
+
+  delete logger;
+  delete fp;
+}
+
+TEST(logger_test, null_stream) {
+  Logger logger;
+
+  bool caught_exception;
+  try {
+    logger.INFO("Test");
+  } catch (StreamWritingException &e) {
+    caught_exception = true;
+    EXPECT_EQ(0, strcmp("Logger was not iniitalized: write called on a NULL stream", e.what()));
+  }
+  EXPECT_TRUE(caught_exception);
 }
 
 

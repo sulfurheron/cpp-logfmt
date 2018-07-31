@@ -27,7 +27,7 @@ class LogFmtMessage {
     std::string secondBuffer(second);
     secondBuffer.insert(0, 1, '"');
     secondBuffer.append(1, '"');
-    logfmt_kv.insert({ first, secondBuffer });
+    logfmt_kv[first] = secondBuffer;
   };
 
   void insert(const std::string& first, const char* second) {
@@ -35,18 +35,26 @@ class LogFmtMessage {
   };
 
   void insert(const std::string& first, const int& second) {
-    logfmt_kv.insert({ first, std::to_string(second) });
+    logfmt_kv[first] = std::to_string(second);
   };
 
   void insert(const std::string& first, const double& second) {
-    logfmt_kv.insert({ first, std::to_string(second) });
+    logfmt_kv[first] = std::to_string(second);
+  };
+
+  void insert(const std::string& first, const long long& second) {
+    logfmt_kv[first] = std::to_string(second);
+  };
+
+  void insert(const std::string& first, const unsigned long long& second) {
+    logfmt_kv[first] = std::to_string(second);
   };
 
   void insert(const std::string& first, const bool& second) {
     if (second) {
-      logfmt_kv.insert({ first, "true" });
+      logfmt_kv[first] = "true";
     } else {
-      logfmt_kv.insert({ first, "false" });
+      logfmt_kv[first] = "false";
     }
   };
 
