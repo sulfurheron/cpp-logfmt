@@ -18,6 +18,7 @@ show_usage()
 if [ "$#" -ne 1 ]; then
 	show_usage && exit 1
 fi
-
+mkdir -p ./kin_logfmt/build
+mkdir -p ./cpp-logfmt/build
 docker build . -t logfmt:build
 docker run -it --rm -v `pwd`:/logfmt logfmt:build $1
