@@ -8,6 +8,19 @@ readable. It is loosely based off the [log15 API for
 Golang](https://github.com/inconshreveable/log15) and uses [this minimal logging
 formatter](https://github.com/kaidoe/cpp-logfmt) at its base.
 
+## Installing
+
+To install the package in your project, use the following command in your Dockerfile:
+```
+RUN curl -s https://packagecloud.io/install/repositories/Kindred/public/script.deb.sh | bash \
+    && apt-get update \
+    && apt-get install -y -f \
+        kin-logfmt=<VERSION>
+    && rm -rf /var/lib/apt/lists/*
+```
+
+The kin-logfmt package is tagged with its dependencies, and `apt-get install -f` fixes missing dependencies by installing them postmortem.
+
 ## Usage
 
 Make sure to include the package header files and the kin_logfmt namespace using
