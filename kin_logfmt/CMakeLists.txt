@@ -9,7 +9,7 @@ find_package(Boost REQUIRED COMPONENTS system)
 include_directories(${Boost_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIRS})
 
-add_definitions(-std=c++14 -g -O2 -pthread -fopenmp -Wall -Wextra)
+add_definitions(-std=c++14 -O2 -pthread -fopenmp -Wall -Wextra)
 
 include_directories(./include
         ../cpp-logfmt/src)
