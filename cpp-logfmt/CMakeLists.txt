@@ -3,7 +3,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.5)
 
 SET(EXECUTABLE_OUTPUT_PATH ".")
 
-add_definitions(-std=c++14 -O2 -pthread -fopenmp -Wall -Wextra)
+add_definitions(-std=c++14 -O2 -pthread -fopenmp -Wall -Wextra -fPIC)
 
 include_directories(./src)
 
