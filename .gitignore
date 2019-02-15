@@ -37,3 +37,7 @@ kin_logfmt/build/
 
 # Packages
 *.deb
+
+# QEMU tools
+qemu-arm-static
+
