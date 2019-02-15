@@ -105,6 +105,10 @@ Then, tests can be run with
 Packaging is easy, just run `build_and_action.sh ./create_package.sh` and upload the built package
 to Gemfury.
 
+To create arm platform packages, run `arm_build_and_action.sh ./arm_create_package.sh`. You will need
+to install `qemu-user-static` (`apt-get install qemu-user-static`), then copy `/usr/bin/qemu-arm-static`
+into this directory.
+
 Hopefully this will ease our logging workflow and make them more compliant with third-party consumers.
 
 ### That's it! Happy logging :)
