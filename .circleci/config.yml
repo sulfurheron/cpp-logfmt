@@ -14,9 +14,17 @@ jobs:
           docker_layer_caching: true
 
       - run:
-          name: Run tests
+          name: Installing kin_ci
           command: |
-              docker build .
+            mkdir -p ~/.local/bin/ 
+            curl https://s3-us-west-2.amazonaws.com/ci.kindredai.net/kin_ci/master/kin_ci > ~/.local/bin/kin_ci
+            chmod +x ~/.local/bin/kin_ci
+
+      - run:
+          name: Build and Upload
+          command: |
+            mkdir -p ./build
+            ./build_and_action.sh ./create_package.sh
 
 workflows:
   version: 2
