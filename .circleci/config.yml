@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  run_tests:
+  build:
     parallelism: 1
     working_directory: ~/checkout
     docker:
@@ -10,8 +10,7 @@ jobs:
       - checkout:
           path: ~/checkout
 
-      - setup_remote_docker:
-          docker_layer_caching: true
+      - setup_remote_docker
 
       - run:
           name: Installing kin_ci
@@ -21,14 +20,29 @@ jobs:
             chmod +x ~/.local/bin/kin_ci
 
       - run:
-          name: Build and Upload
+          name: Installing qemu
+          command: |
+            sudo apt-get install -y qemu-user-static
+            docker run --rm --privileged multiarch/qemu-user-static:register
+            sudo cp /usr/bin/qemu-arm-static ~/checkout
+
+      - run:
+          name: Build and Deploy amd64
           command: |
             mkdir -p ./build
             ./build_and_action.sh ./create_package.sh
+            
+      - run:
+          name: Build and Deploy arm
+          command: |
+            rm -rf ./build
+            ./clean.sh
+            mkdir -p ./build
+            ./arm_build_and_action.sh ./arm_create_package.sh
 
 workflows:
   version: 2
   all:
     jobs:
-      - run_tests:
+      - build:
           context: org-global

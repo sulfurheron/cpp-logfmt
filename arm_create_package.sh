@@ -6,6 +6,7 @@ fpm \
     -t deb \
     -s dir \
     -C /output \
+    -p /build \
     --depends libboost-date-time-dev \
     --depends libboost-system-dev \
     --depends libboost-thread-dev \
@@ -15,4 +16,4 @@ fpm \
     --architecture armhf \
     usr/lib \
     usr/include
-
+  echo "yes" | $HOME/.local/bin/kin_ci upload /build/*.deb

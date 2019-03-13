@@ -14,8 +14,8 @@ RUN apt-get update \
            libboost-dev \
         && rm -rf /var/lib/apt/lists/*
 
-RUN apt-get update && apt-get install -y curl
-RUN apt-get update && apt-get install -y git-all
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
 RUN mkdir -p /logfmt/usr
 
 # build gtest
