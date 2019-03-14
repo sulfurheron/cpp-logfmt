@@ -13,13 +13,6 @@ jobs:
       - setup_remote_docker
 
       - run:
-          name: Installing kin_ci
-          command: |
-            mkdir -p ~/.local/bin/ 
-            curl https://s3-us-west-2.amazonaws.com/ci.kindredai.net/kin_ci/master/kin_ci > ~/.local/bin/kin_ci
-            chmod +x ~/.local/bin/kin_ci
-
-      - run:
           name: Installing qemu
           command: |
             sudo apt-get install -y qemu-user-static
@@ -27,18 +20,20 @@ jobs:
             sudo cp /usr/bin/qemu-arm-static ~/checkout
 
       - run:
-          name: Build and Deploy amd64
+          name: Build amd64
           command: |
-            mkdir -p ./build
-            ./build_and_action.sh ./create_package.sh
+            ./build_and_action.sh ./create_package.sh logfmt:build Dockerfile
             
       - run:
-          name: Build and Deploy arm
+          name: Build arm
           command: |
-            rm -rf ./build
             ./clean.sh
-            mkdir -p ./build
-            ./arm_build_and_action.sh ./arm_create_package.sh
+            ./build_and_action.sh ./arm_create_package.sh logfmt:build-arm Dockerfile.arm
+
+      - run:
+          name: Upload packages
+          command: |
+            ./build_and_action.sh ./upload_packages.sh logfmt:build Dockerfile
 
 workflows:
   version: 2

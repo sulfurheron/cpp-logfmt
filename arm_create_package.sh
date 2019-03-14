@@ -16,4 +16,4 @@ fpm \
     --architecture armhf \
     usr/lib \
     usr/include
-  echo "yes" | $HOME/.local/bin/kin_ci upload /build/*.deb
+

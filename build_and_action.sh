@@ -2,25 +2,23 @@
 
 #
 # To build the libraries & executables and exec into the container:
-#   ./build_and_action.sh ./exec.sh
+#   ./build_and_action.sh ./exec.sh container_name
 #
 # To build the libraries & executables and output the package:
-#   ./build_and_action.sh ./create_package.sh
+#   ./build_and_action.sh ./create_package.sh container_name
 #
 
 set -euo pipefail
 
 show_usage()
 {
-	echo "Usage: ./build_and_action.sh [./exec.sh|./create_package.sh]"
+	echo "Usage: ./build_and_action.sh [./exec.sh|./create_package.sh] container_name docker_file"
 }
 
-if [ "$#" -ne 1 ]; then
+if [ "$#" -ne 3 ]; then
 	show_usage && exit 1
 fi
-mkdir -p ./kin_logfmt/build
-mkdir -p ./cpp-logfmt/build
-docker build . -t logfmt:build
+docker build . -t $2 -f $3
 
 docker run -it \
     -e AWS_ACCESS_KEY_ID \
@@ -30,5 +28,5 @@ docker run -it \
     -e CIRCLE_BRANCH \
     -e GFKEY \
     -e PACKAGECLOUD_TOKEN \
-    --rm -v `pwd`/build:/build logfmt:build \
+    --rm -v `pwd`/build:/build $2 \
     $1
