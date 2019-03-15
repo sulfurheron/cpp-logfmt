@@ -20,6 +20,11 @@ jobs:
             sudo cp /usr/bin/qemu-arm-static ~/checkout
 
       - run:
+          name: Setup Environment Variables
+          command: |
+            echo "export VERSION="$(date -u +%Y%m%d%H%M%S)"" >> $BASH_ENV
+
+      - run:
           name: Build amd64
           command: |
             ./build_and_action.sh ./create_package.sh logfmt:build Dockerfile

@@ -86,7 +86,7 @@ Cleanup is managed within the KinLogfmt object, so don't call delete on your log
 
 ## Developing
 
-To develop on this repo, I usually use `build_and_action.sh ./exec.sh` to build the Docker build
+To develop on this repo, I usually use `build_and_action.sh ./exec.sh CONTAINER_NAME DOCKER_FILE` to build the Docker build
 container, install the libraries & executables, and kick me into the container for further
 testing. If they change during development, headers, libraries & executables can be rebuilt and
 reinstalled using
@@ -102,7 +102,7 @@ Then, tests can be run with
 
 ## Packaging
 
-Packaging is easy, just run `build_and_action.sh ./create_package.sh` and upload the built package
+Packaging is easy, just run `build_and_action.sh ./create_package.sh CONTAINER_NAME DOCKER_FILE` and upload the built package
 to Gemfury.
 
 To create arm platform packages, run `arm_build_and_action.sh ./arm_create_package.sh`.
