@@ -1,7 +1,7 @@
 FROM ubuntu:xenial
 
 RUN apt-get update \
-        && apt-get install -y build-essential ruby-dev rubygems cmake \
+        && apt-get install -y --no-install-recommends build-essential ruby-dev rubygems cmake \
         && gem install fpm \
         && rm -rf /var/lib/apt/lists/*
 
@@ -14,6 +14,8 @@ RUN apt-get update \
            libboost-dev \
         && rm -rf /var/lib/apt/lists/*
 
+RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends git && rm -rf /var/lib/apt/lists/*
 RUN mkdir -p /logfmt/usr
 
 # build gtest
@@ -24,6 +26,10 @@ RUN cmake . \
 
 # build programs
 COPY cpp-logfmt/ /logfmt/cpp-logfmt/
+COPY create_package.sh /logfmt/create_package.sh
+COPY upload_packages.sh /logfmt/upload_packages.sh
+COPY .git /logfmt/.git
+
 WORKDIR /logfmt/cpp-logfmt/build
 RUN cmake \
     -D CMAKE_BUILD_TYPE=Release \
@@ -42,5 +48,9 @@ RUN cmake \
 # Run test
 RUN /output/usr/bin/test_logfmt_util
 RUN /output/usr/bin/logger_test
+
+RUN mkdir -p $HOME/.local/bin \
+ && curl https://s3-us-west-2.amazonaws.com/ci.kindredai.net/kin_ci/master/kin_ci > $HOME/.local/bin/kin_ci \
+ && chmod +x $HOME/.local/bin/kin_ci
 
 WORKDIR /logfmt/

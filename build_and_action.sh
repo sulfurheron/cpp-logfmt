@@ -1,24 +1,26 @@
 #!/bin/bash
 
-#
-# To build the libraries & executables and exec into the container:
-#   ./build_and_action.sh ./exec.sh
-#
-# To build the libraries & executables and output the package:
-#   ./build_and_action.sh ./create_package.sh
-#
-
 set -euo pipefail
 
 show_usage()
 {
-	echo "Usage: ./build_and_action.sh [./exec.sh|./create_package.sh]"
+	echo "Usage: ./build_and_action.sh ./exec.sh|./create_package.sh|./arm_create_package.sh CONTAINER_NAME DOCKER_FILE"
 }
 
-if [ "$#" -ne 1 ]; then
+if [ "$#" -ne 3 ]; then
 	show_usage && exit 1
 fi
-mkdir -p ./kin_logfmt/build
-mkdir -p ./cpp-logfmt/build
-docker build . -t logfmt:build
-docker run -it --rm -v `pwd`:/logfmt logfmt:build $1
+docker build . -t $2 -f $3
+
+VERSION="${VERSION:-$(date -u +%Y%m%d%H%M%S)}"
+
+docker run -it \
+    -e AWS_ACCESS_KEY_ID \
+    -e AWS_SECRET_ACCESS_KEY \
+    -e AWS_DEFAULT_REGION \
+    -e CIRCLE_PROJECT_REPONAME \
+    -e CIRCLE_BRANCH \
+    -e GFKEY \
+    -e PACKAGECLOUD_TOKEN \
+    --rm -v `pwd`/build:/build $2 \
+    $1 $VERSION
