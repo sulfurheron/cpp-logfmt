@@ -67,7 +67,7 @@ namespace kin_logfmt {
     return lhs < rhs;
   }
 
-  const int MAX_MSG_LENGTH = 500;
+  const int MAX_MSG_LENGTH = 5000; // messages longer than this will be truncated
 
 
   class Logger {
@@ -109,7 +109,7 @@ namespace kin_logfmt {
     // Override sprintf
     // Throws SprintfException if the args do not comply
     template <class ...Args>
-    static int sprintf(char *buffer, const char* format, const int arg_count, const Args&... args);
+    static int format_string(char *buffer, size_t max_length, const char* format, const int arg_count, const Args&... args);
 
     private:
 

@@ -82,6 +82,8 @@ request_id,
 client,
 ```
 
+Warning! Messages longer than `MAX_MSG_LENGTH` defined in logger.h (currently 5000) will be truncated and "[TRUNCATED]" appended to the end of the message.
+
 Cleanup is managed within the KinLogfmt object, so don't call delete on your loggers.
 
 ## Developing
