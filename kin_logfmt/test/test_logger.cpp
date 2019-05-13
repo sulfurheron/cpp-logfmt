@@ -2,7 +2,7 @@
 
 #include "logger.h"
 
-#define MAX_MSG_LENGTH 100
+#define BUF_SIZE 100
 #define PI 3.141529
 
 using namespace kin_logfmt;
@@ -10,38 +10,54 @@ using namespace kin_logfmt;
 
 const std::string format = "Hello %s, I am %s and I like %d\'s and %d\'s";
 
-TEST(sprintf_test, smoke) {
-  char msg_buf[MAX_MSG_LENGTH];
-  int num_args_formatted = Logger::sprintf(msg_buf, format.c_str(), 4, "human", "a robot", 1, 0);
-  std::cerr << msg_buf << std::endl;
+TEST(string_format_test, smoke) {
+  char msg_buf[BUF_SIZE];
+  int num_args_formatted = Logger::format_string(msg_buf, BUF_SIZE, format.c_str(), 4, "human", "a robot", 1, 0);
+  std::cout << "> " << msg_buf << std::endl;
   EXPECT_EQ(4, num_args_formatted);
   EXPECT_EQ(0, strcmp("Hello human, I am a robot and I like 1's and 0's", msg_buf));
 
   const char *format2 = "I know Pi is about %.5f";
-  num_args_formatted = Logger::sprintf(msg_buf, format2, 1, PI);
-  std::cerr << msg_buf << std::endl;
+  num_args_formatted = Logger::format_string(msg_buf, BUF_SIZE, format2, 1, PI);
+  std::cout << "> " << msg_buf << std::endl;
   EXPECT_EQ(1, num_args_formatted);
   EXPECT_EQ(0, strcmp("I know Pi is about 3.14153", msg_buf));
 
   const char *format3 = "I know many things :)";
-  num_args_formatted = Logger::sprintf(msg_buf, format3, 0);
-  std::cerr << msg_buf << std::endl;
+  num_args_formatted = Logger::format_string(msg_buf, BUF_SIZE, format3, 0);
+  std::cout << "> " << msg_buf << std::endl;
   EXPECT_EQ(0, num_args_formatted);
   EXPECT_EQ(0, strcmp(format3, msg_buf));
 }
 
 TEST(sprintf_test, not_enough_args) {
-  char msg_buf[MAX_MSG_LENGTH];
+  char msg_buf[BUF_SIZE];
   bool caught_exception;
   try {
-    Logger::sprintf(msg_buf, format.c_str(), 2, "human", "a robot");
+    Logger::format_string(msg_buf, BUF_SIZE, format.c_str(), 2, "human", "a robot");
   } catch (SprintfException &e) {
     caught_exception = true;
     EXPECT_EQ(0, strcmp("Not enough arguments to pass into the format string: the logs may be erroneous.",
                         e.what()));
   }
-  std::cerr << msg_buf << std::endl;
+  std::cout << "> " << msg_buf << std::endl;
   EXPECT_TRUE(caught_exception);
+}
+
+TEST(string_format_test, buffer_no_overflow) {
+  char msg_buf[30];
+  // expect this not to crash with buffer overflow
+  int num_args_formatted = Logger::format_string(msg_buf, 30, format.c_str(), 4, "human", "a robot", 1, 0);
+  std::cout << "> " << msg_buf << std::endl;
+  EXPECT_EQ(4, num_args_formatted);
+}
+
+TEST(string_format_test, tiny_buffer_no_overflow) {
+  char msg_buf[5];
+  // expect this not to crash with buffer overflow
+  int num_args_formatted = Logger::format_string(msg_buf, 5, format.c_str(), 4, "human", "a robot", 1, 0);
+  std::cout << "> " << msg_buf << std::endl;
+  EXPECT_EQ(4, num_args_formatted);
 }
 
 TEST(msg_metadata_test, smoke) {

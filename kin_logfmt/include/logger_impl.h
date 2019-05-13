@@ -97,7 +97,7 @@ std::string Logger::compile_logfmt_content(const std::string& msg, const Args&..
   int arg_count = args_vec.size();
   int format_arg_count = 0;
   try {
-    format_arg_count = sprintf(msg_buf, msg.c_str(), arg_count, args...);
+    format_arg_count = format_string(msg_buf, MAX_MSG_LENGTH, msg.c_str(), arg_count, args...);
   } catch (SprintfException &e) {
     std::cerr << "Error formatting msg: " << e.what() << std::endl;
   }
@@ -155,13 +155,15 @@ std::vector<logfmt_kv_t> Logger::construct_kv_pairs(int arg_start, int arg_end, 
 }
 
 /*
-  Sprintf (overloaded) performs some basic tests on the formatting arguments
+  format_string performs some basic tests on the formatting arguments
   to try and throw a descriptive error. It also returns the number of arguments
   it expectedly formatted (based on the number of format descriptors %), rather than
   the number of characters it formatted as sprintf does.
 */
 template <class ...Args>
-int Logger::sprintf(char *buffer, const char *format, const int arg_count, const Args&... args) {
+int Logger::format_string(char *buffer, size_t max_length, const char *format, const int arg_count, const Args&... args) {
+  static const char* truncation_warning = "[TRUNCATED]";
+  static const int warning_len = strlen(truncation_warning);
 
   // Scan the number of expected arguments
   int format_arg_count = (*format == '%') ? 1 : 0;
@@ -171,8 +173,10 @@ int Logger::sprintf(char *buffer, const char *format, const int arg_count, const
     }
   }
 
-  //int num_chars_formatted =
-  ::sprintf(buffer, format, args...);
+  int char_count = snprintf(buffer, max_length, format, args...);
+  if (char_count >= (int)max_length) {
+    strncpy(buffer + std::max(0, (int)max_length - warning_len), truncation_warning, std::min(warning_len, (int)max_length));
+  }
 
   if (arg_count < format_arg_count) {
     throw SprintfException("Not enough arguments to pass into the format string: the logs may be erroneous.");
