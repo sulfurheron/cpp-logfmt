@@ -1,0 +1,56 @@
+FROM ubuntu:focal
+
+RUN apt-get update \
+        && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends build-essential ruby-dev rubygems cmake \
+        && gem install fpm \
+        && rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update \
+        && apt-get install -y --no-install-recommends \
+           libgtest-dev \
+           libboost-date-time-dev \
+           libboost-system-dev \
+           libboost-thread-dev \
+           libboost-dev \
+        && rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends git && rm -rf /var/lib/apt/lists/*
+RUN mkdir -p /logfmt/usr
+
+# build gtest
+WORKDIR /usr/src/gtest
+RUN cmake . \
+    && make \
+    && cp lib/*.a /usr/lib
+
+# build programs
+COPY cpp-logfmt/ /logfmt/cpp-logfmt/
+COPY create_package.sh /logfmt/create_package.sh
+COPY upload_packages.sh /logfmt/upload_packages.sh
+COPY .git /logfmt/.git
+
+WORKDIR /logfmt/cpp-logfmt/build
+RUN cmake \
+    -D CMAKE_BUILD_TYPE=Release \
+    -D CMAKE_INSTALL_PREFIX=/output/usr \
+    .. \
+    && make install
+
+COPY kin_logfmt/ /logfmt/kin_logfmt/
+WORKDIR /logfmt/kin_logfmt/build
+RUN cmake \
+    -D CMAKE_BUILD_TYPE=Release \
+    -D CMAKE_INSTALL_PREFIX=/output/usr \
+    .. \
+    && make install
+
+# Run test
+RUN /output/usr/bin/test_logfmt_util
+RUN /output/usr/bin/logger_test
+
+RUN mkdir -p $HOME/.local/bin \
+ && curl https://s3-us-west-2.amazonaws.com/ci.kindredai.net/kin_ci/master/kin_ci > $HOME/.local/bin/kin_ci \
+ && chmod +x $HOME/.local/bin/kin_ci
+
+WORKDIR /logfmt/
