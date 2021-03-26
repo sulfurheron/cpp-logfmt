@@ -43,6 +43,7 @@ jobs:
       - run:
           name: Upload packages
           command: |
+            export GFKEY=
             ./build_and_action.sh ./upload_packages.sh logfmt:build xenial
             ./build_and_action.sh ./upload_packages.sh logfmt:build-focal focal
 
