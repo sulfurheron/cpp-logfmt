@@ -29,16 +29,16 @@ jobs:
           command: |
             ./build_and_action.sh ./create_package.sh logfmt:build xenial
 
-      # - run:
-      #     name: Build focal amd64
-      #     command: |
-      #       ./build_and_action.sh ./create_package.sh logfmt:build-focal focal
-
       - run:
-          name: Build arm
+          name: Build focal amd64
           command: |
-            ./clean.sh
-            ./build_and_action.sh ./arm_create_package.sh logfmt:build-arm arm
+            ./build_and_action.sh ./create_package.sh logfmt:build-focal focal
+
+      # - run:
+      #     name: Build arm
+      #     command: |
+      #       ./clean.sh
+      #       ./build_and_action.sh ./arm_create_package.sh logfmt:build-arm arm
 
       - run:
           name: Upload packages
