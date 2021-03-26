@@ -22,5 +22,5 @@ docker run -it \
     -e CIRCLE_BRANCH \
     -e GFKEY \
     -e PACKAGECLOUD_TOKEN \
-    --rm -v `pwd`/build:/build $2 \
+    --rm -v `pwd`/build-$3:/build $2 \
     $1 $VERSION $3
