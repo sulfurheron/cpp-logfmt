@@ -29,10 +29,10 @@ jobs:
           command: |
             ./build_and_action.sh ./create_package.sh logfmt:build xenial
 
-      - run:
-          name: Build focal amd64
-          command: |
-            ./build_and_action.sh ./create_package.sh logfmt:build-focal focal
+      # - run:
+      #     name: Build focal amd64
+      #     command: |
+      #       ./build_and_action.sh ./create_package.sh logfmt:build-focal focal
 
       - run:
           name: Build arm
