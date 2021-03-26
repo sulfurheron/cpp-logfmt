@@ -3,7 +3,7 @@ FROM arm32v7/ubuntu:xenial
 COPY qemu-arm-static /usr/bin
 
 RUN apt-get update \
-        && apt-get install -y --no-install-recommends build-essential ruby-dev rubygems cmake \
+        && apt-get install -y --no-install-recommends build-essential ruby-dev rubygems cmake git \
         && gem install fpm \
         && rm -rf /var/lib/apt/lists/*
 
