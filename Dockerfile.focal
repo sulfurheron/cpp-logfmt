@@ -1,9 +1,7 @@
-FROM arm32v7/ubuntu:xenial
-
-COPY qemu-arm-static /usr/bin
+FROM ubuntu:focal
 
 RUN apt-get update \
-        && apt-get install -y --no-install-recommends build-essential ruby-dev rubygems cmake git \
+        && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends build-essential ruby-dev rubygems cmake \
         && gem install fpm \
         && rm -rf /var/lib/apt/lists/*
 
@@ -16,17 +14,21 @@ RUN apt-get update \
            libboost-dev \
         && rm -rf /var/lib/apt/lists/*
 
+RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends git && rm -rf /var/lib/apt/lists/*
 RUN mkdir -p /logfmt/usr
 
 # build gtest
 WORKDIR /usr/src/gtest
 RUN cmake . \
     && make \
-    && cp *.a /usr/lib
+    && cp lib/*.a /usr/lib
 
 # build programs
 COPY cpp-logfmt/ /logfmt/cpp-logfmt/
-COPY arm_create_package.sh /logfmt/arm_create_package.sh
+COPY create_package.sh /logfmt/create_package.sh
+COPY upload_packages.sh /logfmt/upload_packages.sh
+COPY .git /logfmt/.git
 
 WORKDIR /logfmt/cpp-logfmt/build
 RUN cmake \
@@ -46,5 +48,9 @@ RUN cmake \
 # Run test
 RUN /output/usr/bin/test_logfmt_util
 RUN /output/usr/bin/logger_test
+
+RUN mkdir -p $HOME/.local/bin \
+ && curl https://s3-us-west-2.amazonaws.com/ci.kindredai.net/kin_ci/master/kin_ci > $HOME/.local/bin/kin_ci \
+ && chmod +x $HOME/.local/bin/kin_ci
 
 WORKDIR /logfmt/

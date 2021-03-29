@@ -4,13 +4,13 @@ set -euo pipefail
 
 show_usage()
 {
-	echo "Usage: ./build_and_action.sh ./exec.sh|./create_package.sh|./arm_create_package.sh CONTAINER_NAME DOCKER_FILE"
+	echo "Usage: ./build_and_action.sh ./exec.sh|./create_package.sh|./arm_create_package.sh CONTAINER_NAME DOCKER_FILE_SUFFIX"
 }
 
 if [ "$#" -ne 3 ]; then
 	show_usage && exit 1
 fi
-docker build . -t $2 -f $3
+docker build . -t $2 -f Dockerfile.$3
 
 VERSION="${VERSION:-$(date -u +%Y%m%d%H%M%S)}"
 
@@ -22,5 +22,5 @@ docker run -it \
     -e CIRCLE_BRANCH \
     -e GFKEY \
     -e PACKAGECLOUD_TOKEN \
-    --rm -v `pwd`/build:/build $2 \
-    $1 $VERSION
+    --rm -v `pwd`/build-$3:/build $2 \
+    $1 $VERSION $3
